@@ -1,14 +1,14 @@
 {
-    "name": "int32bit-blog",
-    "title": "Int32bit Blog",
-    "author": "int32bit <krystism@gmail.com>",
+    "name": "elrondwong-blog",
+    "title": "elrondwong Blog",
+    "author": "elrondwong <gfengwong@gmail.com>",
     "version": "1.6.0",
-    "homepage": "http://int32bit.github.io",
+    "homepage": "http://elrond.wang",
     "repository": {
         "type": "git",
-        "url": "https://github.com/int32bit/int32bit.github.io"
+        "url": "https://github.com/elrondwong/elrond.wang"
     },
-    "bugs": "https://github.com/int32bit/int32bit.github.io/issues",
+    "bugs": "https://github.com/elrondwong/elrond.wang/issues",
     "devDependencies": {
         "grunt": "~0.4.5",
         "grunt-contrib-less": "~0.11.4",
