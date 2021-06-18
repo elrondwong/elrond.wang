@@ -4,6 +4,51 @@ title: Kubernetes集成Ceph
 catalog: true
 tag: [Ceph, Kubernetes]
 ---
+
+<!-- TOC -->
+
+- [1. 版本](#1-版本)
+- [2. 块存储](#2-块存储)
+  - [2.1. 准备](#21-准备)
+  - [2.2. csi模式--当前使用](#22-csi模式--当前使用)
+    - [2.2.1. 配置configmap](#221-配置configmap)
+    - [2.2.2. 配置secret](#222-配置secret)
+    - [2.2.3. 配置rbac](#223-配置rbac)
+    - [2.2.4. 配置provisioner和node plugins](#224-配置provisioner和node-plugins)
+    - [2.2.5. 配置storageclass](#225-配置storageclass)
+  - [2.3. external-storage模式 -- 版本陈旧不再使用](#23-external-storage模式----版本陈旧不再使用)
+    - [2.3.1. 配置provisioner](#231-配置provisioner)
+    - [2.3.2. 创建clusterstorage](#232-创建clusterstorage)
+    - [2.3.3. 创建secret](#233-创建secret)
+  - [2.4. 测试](#24-测试)
+    - [2.4.1. 创建pvc](#241-创建pvc)
+    - [2.4.2. 创建pod使用刚创建的sc](#242-创建pod使用刚创建的sc)
+- [3. 对象存储](#3-对象存储)
+- [4. 文件系统](#4-文件系统)
+  - [4.1. 准备工作](#41-准备工作)
+    - [4.1.1. 创建一个文件系统](#411-创建一个文件系统)
+    - [4.1.2. 获取集群信息](#412-获取集群信息)
+  - [4.2. 部署ceph-csi-cephfs](#42-部署ceph-csi-cephfs)
+  - [4.3. configmap](#43-configmap)
+    - [4.3.1. rbac](#431-rbac)
+    - [4.3.2. provisioner](#432-provisioner)
+    - [4.3.3. 确认部署成功](#433-确认部署成功)
+  - [4.4. 客户端配置](#44-客户端配置)
+    - [4.4.1. secret](#441-secret)
+    - [4.4.2. storageclass](#442-storageclass)
+  - [4.5. 测试](#45-测试)
+    - [4.5.1. 创建pvc](#451-创建pvc)
+    - [4.5.2. 创建pod](#452-创建pod)
+- [5. 参考](#5-参考)
+- [6. Troubleshooting](#6-troubleshooting)
+  - [6.1. pvc 一直在pending状态--csi容器无法调度](#61-pvc-一直在pending状态--csi容器无法调度)
+    - [6.1.1. 现象](#611-现象)
+    - [6.1.2. 排查过程](#612-排查过程)
+    - [6.1.3. 解决方式](#613-解决方式)
+  - [6.2. pvc 一直在pending状态 -- provisioner版本太低](#62-pvc-一直在pending状态----provisioner版本太低)
+- [7. 总结](#7-总结)
+
+<!-- /TOC -->
 # 1. 版本
 
 |      软件名      |     版本     |   备注   |
