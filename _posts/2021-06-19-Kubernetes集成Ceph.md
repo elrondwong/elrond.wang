@@ -4,7 +4,7 @@ title: Kubernetes集成Ceph
 catalog: true
 tag: [Ceph, Kubernetes]
 ---
-# 版本
+# 1. 版本
 
 |      软件名      |     版本     |   备注   |
 | :--------------: | :----------: | :------: |
@@ -14,9 +14,9 @@ tag: [Ceph, Kubernetes]
 |     ceph-csi     | release-v3.3 |          |
 | external-storage |    master    |          |
 
-# 块存储
+# 2. 块存储
 
-## 准备
+## 2.1. 准备
 
 - 创建ceph pool
 
@@ -56,9 +56,9 @@ e2: 3 mons at {ceph01=[v2:172.16.81.237:3300/0,v1:172.16.81.237:6789/0],ceph02=[
 yum install ceph-common -y 
 ```
 
-## csi模式--当前使用
+## 2.2. csi模式--当前使用
 
-### 配置configmap
+### 2.2.1. 配置configmap
 
 - 生成configmap
 
@@ -112,7 +112,7 @@ EOF
 kubectl apply -f csi-kms-config-map.yaml
 ```
 
-### 配置secret
+### 2.2.2. 配置secret
 
 - 生成secret
   修改字段：
@@ -138,7 +138,7 @@ EOF
 kubectl apply -f csi-rbd-secret.yaml
 ```
 
-### 配置rbac
+### 2.2.3. 配置rbac
 
 
 ```bash
@@ -146,7 +146,7 @@ kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/r
 kubectl apply -f https://raw.githubusercontent.com/ceph/ceph-csi/master/deploy/rbd/kubernetes/csi-nodeplugin-rbac.yaml
 ```
 
-### 配置provisioner和node plugins
+### 2.2.4. 配置provisioner和node plugins
 
 > 注意⚠️：国内无法访问 `k8s.gcr.io`需要将下面两个文件中的 `k8s.gcr.io/sig-storage` 替换为 `quay.io/cephcsi`
 
@@ -158,7 +158,7 @@ kubectl apply -f  csi-rbdplugin-provisioner.yaml
 kubectl apply -f csi-rbdplugin.yaml
 ```
 
-### 配置storageclass
+### 2.2.5. 配置storageclass
 
 - 创建配置
   需要修改的参数：
@@ -195,9 +195,9 @@ EOF
 kubectl apply -f csi-rbd-sc.yaml
 ```
 
-## external-storage模式 -- 版本陈旧不再使用
+## 2.3. external-storage模式 -- 版本陈旧不再使用
 
-### 配置provisioner
+### 2.3.1. 配置provisioner
 
 ```yaml
 cat <<EOF > deployment.yaml
@@ -232,7 +232,7 @@ kubectl apply -f  deployment.yaml
 
 > 使用的ceph 14但容器里面的ceph-common版本为13，需要将其升级为14才可以正常创建pvc
 
-### 创建clusterstorage
+### 2.3.2. 创建clusterstorage
 
 需要修改的参数
 
@@ -266,7 +266,7 @@ parameters:
 kubectl apply -f class.yaml
 ```
 
-### 创建secret
+### 2.3.3. 创建secret
 
 需要修改的参数:
 
@@ -289,9 +289,9 @@ data:
 kubectl apply -f secret.yaml
 ```
 
-## 测试
+## 2.4. 测试
 
-### 创建pvc
+### 2.4.1. 创建pvc
 
 ```yaml
 cat <<EOF > raw-block-pvc.yaml
@@ -323,7 +323,7 @@ kubectl get pvc raw-block-pvc
 raw-block-pvc   Bound    pvc-a0fb907f-e067-443c-89fe-127a794c8f1b   1Gi        RWO            csi-rbd-sc     13h
 ```
 
-### 创建pod使用刚创建的sc
+### 2.4.2. 创建pod使用刚创建的sc
 
 ```yaml
 cat <<EOF > raw-block-pvc.yaml
@@ -370,15 +370,15 @@ kubectl exec -it pod-with-raw-block-volume lsblk
 rbd0   252:0    0    1G  0 disk
 ```
 
-# 对象存储
+# 3. 对象存储
 
 对象存储直接使用七层协议 http https即可，无需做复杂的csi
 
-# 文件系统
+# 4. 文件系统
 
-## 准备工作
+## 4.1. 准备工作
 
-### 创建一个文件系统
+### 4.1.1. 创建一个文件系统
 
 - 创建两个pool 一个存文件系统数据另一个存文件系统元数据
 
@@ -396,7 +396,7 @@ ceph osd pool create cephfs_data 256 256
 ceph fs new cephfs cephfs_metadata cephfs_data
 ```
 
-### 获取集群信息
+### 4.1.2. 获取集群信息
 
 - 获取clusterid
 
@@ -423,7 +423,7 @@ ceph mon stat
 e2: 3 mons at {ceph01=[v2:172.16.81.237:3300/0,v1:172.16.81.237:6789/0],ceph02=[v2:172.16.81.238:3300/0,v1:172.16.81.238:6789/0],ceph03=[v2:172.16.81.239:3300/0,v1:172.16.81.239:6789/0]}, election epoch 10, leader 0 ceph01, quorum 0,1,2 ceph01,ceph02,ceph03
 ```
 
-## 部署ceph-csi-cephfs
+## 4.2. 部署ceph-csi-cephfs
 
 - [服务部署配置](https://github.com/ceph/ceph-csi/tree/devel/deploy/cephfs/kubernetes)
 
@@ -435,7 +435,7 @@ e2: 3 mons at {ceph01=[v2:172.16.81.237:3300/0,v1:172.16.81.237:6789/0],ceph02=[
 
 下载下来之后进入 `deploy/cephfs/kubernetes`
 
-## configmap
+## 4.3. configmap
 
 configmap只给出了模板需要自己填写下
 
@@ -472,14 +472,14 @@ EOF
 kubectl apply -f csi-config-map.yaml
 ```
 
-### rbac
+### 4.3.1. rbac
 
 ```
 kubectl create -f csi-provisioner-rbac.yaml
 kubectl create -f csi-nodeplugin-rbac.yaml
 ```
 
-### provisioner
+### 4.3.2. provisioner
 
 部署provisioner的时候需要启动容器,默认的镜像时由于`[kubernetes-csi](https://github.com/kubernetes-csi)`中provisioner使用的镜像地址为 `k8s.gcr.io/sig-storage/csi-provisioner` ，这个地址在中国大陆无法访问，需要手动修改 `k8s.gcr.io/sig-storage` 为 `quay.io/k8scsi` 
 
@@ -490,7 +490,7 @@ kubectl create -f csi-cephfsplugin-provisioner.yaml
 kubectl create -f csi-cephfsplugin.yaml
 ```
 
-### 确认部署成功
+### 4.3.3. 确认部署成功
 
 ```bash
 kubectl get po|grep cephfs
@@ -507,9 +507,9 @@ csi-cephfsplugin-provisioner-55859c9ff7-vlc6b   6/6     Running   0          64m
 >
 > 到这里 `deploy/cephfs/kubernetes`部分我们部署完了，切个目录`examples/cephfs/`开始部署客户端
 
-## 客户端配置
+## 4.4. 客户端配置
 
-### secret
+### 4.4.1. secret
 
 修改:
 
@@ -540,7 +540,7 @@ stringData:
 kubectl apply -f secret.yaml
 ```
 
-### storageclass
+### 4.4.2. storageclass
 
 修改
 
@@ -577,9 +577,9 @@ EOF
 kubectl apply -f storageclass.yaml
 ```
 
-## 测试
+## 4.5. 测试
 
-### 创建pvc
+### 4.5.1. 创建pvc
 
 ```bash
 kubectl apply -f pvc.yaml
@@ -590,7 +590,7 @@ NAME             STATUS   VOLUME                                     CAPACITY   
 csi-cephfs-pvc   Bound    pvc-cb6988b1-3dde-4227-80ff-5f549709b768   1Gi        RWX            csi-cephfs-sc   62m
 ```
 
-### 创建pod
+### 4.5.2. 创建pod
 
 ```bash
 kubectl apply -f pod.yaml
@@ -602,17 +602,17 @@ kubectl exec -it csi-cephfs-demo-pod df
 ```
 
 
-# 参考
+# 5. 参考
 
 - [ceph-csi](https://github.com/ceph/ceph-csi)
 - [external-storage](https://github.com/kubernetes-retired/external-storage)
 - [Block Devices and Kubernetes](https://docs.ceph.com/en/latest/rbd/rbd-kubernetes/)
 
-# Troubleshooting
+# 6. Troubleshooting
 
-## pvc 一直在pending状态--csi容器无法调度
+## 6.1. pvc 一直在pending状态--csi容器无法调度
 
-### 现象
+### 6.1.1. 现象
 
 ```bash
 kubectl get pvc
@@ -620,7 +620,7 @@ NAME            STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 raw-block-pvc   Pending                                      csi-rbd-sc     8m17s
 ```
 
-### 排查过程
+### 6.1.2. 排查过程
 
 - describe pvc
 
@@ -650,7 +650,7 @@ kubectl describe po csi-rbdplugin-provisioner-9db69594c-gkvfv
 
 原因是三个节点都没有去污点 所以没有节点可以调度
 
-### 解决方式
+### 6.1.3. 解决方式
 
 去污点
 
@@ -658,7 +658,7 @@ kubectl describe po csi-rbdplugin-provisioner-9db69594c-gkvfv
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
-## pvc 一直在pending状态 -- provisioner版本太低
+## 6.2. pvc 一直在pending状态 -- provisioner版本太低
 
 - 查看pvc
 
@@ -705,7 +705,7 @@ rbd: couldn't connect to the cluster!
 rbd-provisioner 用的ceph版本是13 应该是版本不同消息结构不同导致的，所以升级到14
 升级到14之后解决问题
 
-# 总结
+# 7. 总结
 
 官方文档已非常详尽，主要遇到两个问题
 
