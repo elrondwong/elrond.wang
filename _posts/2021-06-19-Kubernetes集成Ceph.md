@@ -1,6 +1,9 @@
-
-
-[TOC]
+---
+layout: post
+title: Kubernetes集成Ceph
+catalog: true
+tag: [Ceph, Kubernetes]
+---
 # 版本
 
 |      软件名      |     版本     |   备注   |
