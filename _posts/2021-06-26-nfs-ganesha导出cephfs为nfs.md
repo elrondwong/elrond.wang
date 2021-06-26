@@ -79,20 +79,20 @@ EXPORT
         transports = "UDP", "TCP";
         Squash = no_root_squash;
         FSAL {
-                # 访问ceph用户对应的secretkey
-                secret_access_key = "AQDk18FgMo7NABAA4ufuz3O6/0lE4vsVgHs1yQ==";
-                # 访问ceph的用户
-                user_id = "admin";
-                name = "CEPH";
-                # cephfs 的fsname
-                filesystem = "cephfs";
+                # 访问ceph用户对应的secretkey  
+                secret_access_key = "AQDk18FgMo7NABAA4ufuz3O6/0lE4vsVgHs1yQ==";  
+                # 访问ceph的用户  
+                user_id = "admin";  
+                name = "CEPH";  
+                # cephfs 的fsname  
+                filesystem = "cephfs";  
         }        
 }
 LOG {                         
         Facility {
-                name = FILE;
-                destination = "/var/log/ganesha/ganesha.log";
-                enable = active;
+                name = FILE;  
+                destination = "/var/log/ganesha/ganesha.log";  
+                enable = active;  
         }
 }
 ```
