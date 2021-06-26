@@ -66,25 +66,25 @@ yum install nfs-ganesha nfs-ganesha-ceph libcephfs2 -y
 
 配置文件 `/etc/ganesha/ganesha.conf`
 
-```ini
+```json
 EXPORT
 {
         Export_ID=1;
-        # cephfs的目录
+        // cephfs的目录
         Path = /;
-        # nfs-ganesha挂载的目录
+        // nfs-ganesha挂载的目录
         Pseudo = /cephfs;
         Access_Type = RW;
         protocols = 3, 4;
         transports = "UDP", "TCP";
         Squash = no_root_squash;
         FSAL {
-                # 访问ceph用户对应的secretkey  
+                // 访问ceph用户对应的secretkey  
                 secret_access_key = "AQDk18FgMo7NABAA4ufuz3O6/0lE4vsVgHs1yQ==";  
-                # 访问ceph的用户  
+                // 访问ceph的用户  
                 user_id = "admin";  
                 name = "CEPH";  
-                # cephfs 的fsname  
+                // cephfs 的fsname  
                 filesystem = "cephfs";  
         }        
 }
