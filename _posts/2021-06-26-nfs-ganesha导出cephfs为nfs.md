@@ -66,7 +66,7 @@ yum install nfs-ganesha nfs-ganesha-ceph libcephfs2 -y
 
 配置文件 `/etc/ganesha/ganesha.conf`
 
-```json
+```
 EXPORT
 {
         Export_ID=1;
