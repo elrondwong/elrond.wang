@@ -12,11 +12,11 @@ default_header_image: img/post-bg-universe.jpg
 
 # SNS settings
 RSS: true
-weibo_username:     gfengwong
-zhihu_username:     GfengWong
+# weibo_username:     gfengwong
+# zhihu_username:     GfengWong
 github_username:    elrondwong
-twitter_username:  GfengWong
-facebook_username:  GfengWong
+# twitter_username:  GfengWong
+# facebook_username:  GfengWong
 
 # Build settings
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
