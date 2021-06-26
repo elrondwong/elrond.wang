@@ -5,25 +5,41 @@ catalog: true
 tag: [Ceph]
 ---
 
-# 概述
+<!-- TOC -->
+
+- [1. 概述](#1-概述)
+- [2. 前提条件](#2-前提条件)
+- [3. 版本说明](#3-版本说明)
+- [4. 安装](#4-安装)
+  - [4.1. 配置yum源](#41-配置yum源)
+  - [4.2. 安装软件](#42-安装软件)
+- [5. 配置](#5-配置)
+- [6. 使用](#6-使用)
+- [7. 部署问题](#7-部署问题)
+  - [7.1. nfs挂载之后无法创建文件、文件夹](#71-nfs挂载之后无法创建文件文件夹)
+- [8. 剩下的问题](#8-剩下的问题)
+- [9. 参考文档](#9-参考文档)
+
+<!-- /TOC -->
+# 1. 概述
 
 cephfs直接使用不变，需要安装较多的依赖，相对来说nfs更加通用。
 **FSAL_CEPH** 调用 **libcephfs2** 将 NFS 转义为 Cephfs 协议再存入到 Ceph 中，通过这种途径来实现cephfs导出为NFS
 
-# 前提条件
+# 2. 前提条件
 
 - 有一个cephfs集群
 - 安装 `nfs-ganesha nfs-ganesha-ceph libcephfs2`
 - nfs-ganesha服务需要能连接到ceph的public网络
 - 安装nfs必要软件 `rpcbind` `nfs-utils`
 
-# 版本说明
+# 3. 版本说明
 
 - nfs-ceph 2.8 nautilus
 
-# 安装
+# 4. 安装
 
-## 配置yum源
+## 4.1. 配置yum源
 
 `cat /etc/yum.repos.d/storage.repo`
 
@@ -40,13 +56,13 @@ yum clean all
 yum repolist
 ```
 
-## 安装软件
+## 4.2. 安装软件
 
 ```bash
 yum install nfs-ganesha nfs-ganesha-ceph libcephfs2 -y
 ```
 
-# 配置
+# 5. 配置
 
 配置文件 `/etc/ganesha/ganesha.conf`
 
@@ -88,7 +104,7 @@ systemctl enable nfs-ganesha nfs-utils rpcbind
 systemctl start nfs-ganesha nfs-utils rpcbind
 ```
 
-# 使用
+# 6. 使用
 
 ```bash
 mkdir /opt/ganesha
@@ -107,9 +123,9 @@ df
 
 性能测试结果见， 小集群下性能差距非常小  https://docs.qq.com/doc/DR3RlaGh2ZXpqV1pT
 
-# 部署问题
+# 7. 部署问题
 
-## nfs挂载之后无法创建文件、文件夹
+## 7.1. nfs挂载之后无法创建文件、文件夹
 
 ```bash
 touch  aax
@@ -122,7 +138,7 @@ touch: 无法创建"aax": 权限不够
 
 > 这个配置项是nfs的配置项，客户端使用 NFS 文件系统的账号若为 root 时，系统该如何判断这个账号的身份？预设的情况下，客户端 root 的身份会由 root_squash 的设定压缩成 nfsnobody， 如此对服务器的系统会较有保障。但如果你想要开放客户端使用 root 身份来操作服务器的文件系统，那么这里就得要开 no_root_squash 才行！
 
-# 剩下的问题
+# 8. 剩下的问题
 
 - 如何调用api使得nfs-ganesha生成配置且重新加载
   ceph中的实现是将nfs-ganesha的配置存储为ceph的对象，新建修改删除操作的都是ceph上的对象
@@ -139,7 +155,7 @@ touch: 无法创建"aax": 权限不够
 
   既然可以用k8s service来实现，是否也可以通过简单的ha+keepalived来实现(待验证)
 
-# 参考文档
+# 9. 参考文档
 
 - [鸟哥私房菜nfs](http://cn.linux.vbird.org/linux_server/0330nfs.php)
 - [nfs-ganasha](https://github.com/nfs-ganesha/nfs-ganesha/blob/next/src/config_samples/ceph.conf)
