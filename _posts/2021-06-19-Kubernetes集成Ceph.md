@@ -46,6 +46,12 @@ tag: [Ceph, Kubernetes]
     - [6.1.2. 排查过程](#612-排查过程)
     - [6.1.3. 解决方式](#613-解决方式)
   - [6.2. pvc 一直在pending状态 -- provisioner版本太低](#62-pvc-一直在pending状态----provisioner版本太低)
+  - [6.3. cephfs pvc 无法成功创建](#63-cephfs-pvc-无法成功创建)
+    - [6.3.1. 问题现象](#631-问题现象)
+    - [6.3.2. 问题分析](#632-问题分析)
+      - [6.3.2.1. pvc创建流程](#6321-pvc创建流程)
+      - [6.3.2.2. 分析过程](#6322-分析过程)
+    - [6.3.3. 附](#633-附)
 - [7. 总结](#7-总结)
 
 <!-- /TOC -->
@@ -56,7 +62,7 @@ tag: [Ceph, Kubernetes]
 |      docker      |   19.03.14   |          |
 |    kubernetes    |    1.19.7    |          |
 |       ceph       |   14.2.21    | nautilus |
-|     ceph-csi     | release-v3.3 |          |
+|     ceph-csi     | release-v3.3 | 手动更新quay.io/cephcsi/cephcsi:v3.3.0为  quay.io/cephcsi/cephcsi:v3.2-canary 否则由于ceph版本问题认证会不通过  |
 | external-storage |    master    |          |
 
 # 2. 块存储
@@ -535,6 +541,13 @@ kubectl create -f csi-cephfsplugin-provisioner.yaml
 kubectl create -f csi-cephfsplugin.yaml
 ```
 
+更新csi镜像版本，默认使用v3.3.0的镜像与ceph14版本不兼容，pvc无法创建，更换为v3.2-canary
+
+```bash
+sed -i 's/cephcsi:v3.3.0/cephcsi:v3.2-canary/g' csi-cephfsplugin-provisioner.yaml
+sed -i 's/cephcsi:v3.3.0/cephcsi:v3.3.0/g' csi-cephfsplugin.yaml
+```
+
 ### 4.3.3. 确认部署成功
 
 ```bash
@@ -750,6 +763,66 @@ rbd: couldn't connect to the cluster!
 rbd-provisioner 用的ceph版本是13 应该是版本不同消息结构不同导致的，所以升级到14
 升级到14之后解决问题
 
+## 6.3. cephfs pvc 无法成功创建
+
+### 6.3.1. 问题现象
+
+pvc创建之后一直在`pending`状态
+
+```bash
+kubectl describe pvc csi-cephfs-pvc
+# 输出如下
+'ProvisioningFailed' failed to provision volume with StorageClass "csi-cephfs-sc": rpc error: code = InvalidArgument desc = failed to get connection: connecting failed: rados: ret=-13, Permission denied
+```
+
+### 6.3.2. 问题分析
+
+#### 6.3.2.1. pvc创建流程
+
+```
+                                        +----------------+
+                                        |ceph mon ip:port|
+                   +----------------+   |ceph uuid       |
+pvc->storageclass->| csi provisioner |->|ceph user       |->ceph cluster
+   |               +------+---------+   |ceph keyring    |
+   |                      |             +----------------+
+ secret               configmap
+```
+
+- pvc中指定了sc
+- sc中指定了ceph集群的secret和uuid
+- secret中带了ceph集群的用户名和对应的keyring
+- sc带着secret和uuid去请求csi创建请求会走到 `csi-cephfsplugin-provisioner-xxx` pod的 `csi-provisioner` 容器
+- 容器中挂载了configmap configmap中指定了ceph集群的uuid和mon ip端口
+- 获取到以上四个信息去ceph集群创建fs文件
+
+#### 6.3.2.2. 分析过程
+
+- csi 镜像由于没有提供sh shell类似的命令行debug比较困难, 所以用其他方式debug
+- 在本机安装合适的ceph-common拷贝配置文件 使用csi中的用户 挂载文件系统如果成功则证明
+  - 网络策略正常
+  - 用户正常
+- 对比configmap中的uuid和mon的ip port与实际集群是否相符
+- 对比secret中的secretkey user是否与集群实际相符
+- 对比完以上则对比csi镜像版本，主要需要确认csi的ceph版本是否与要连接的ceph集群版本一致，最快的方式是查看镜像的Manifest Layers 中的ceph版本
+  - 例如 `https://quay.io/repository/cephcsi/cephcsi/manifest/、sha256:dbdff0c77c626a48616e5ad57ac1c6d7e00890b83003604312010a0f1b148676` 这个是 CEPH_POINT_RELEASE=-16.2.5 说明ceph版本是16.2.5 15以下的版本无法使用 17以上的版本可能也无法使用
+  - 或者可以通过查看对应版本的csi源码 `https://github.com/ceph/ceph-csi/blob/devel/build.env`
+  build.env中的 BASE_IMAGE=docker.io/ceph/ceph:v16 |CEPH_VERSION=octopus
+
+### 6.3.3. 附
+
+- 查看镜像版本
+
+```bash
+kubectl get pods -l app=csi-cephfsplugin-provisioner -o jsonpath="{.items[*].spec.containers[*].image}" |tr -s '[[:space:]]' '\n' |sort |uniq -c
+# 14版本的ceph镜像版本如下
+      6 quay.io/cephcsi/cephcsi:v3.2-canary
+      3 quay.io/k8scsi/csi-attacher:v3.0.2
+      3 quay.io/k8scsi/csi-provisioner:v2.0.4
+      3 quay.io/k8scsi/csi-resizer:v1.0.1
+      3 quay.io/k8scsi/csi-snapshotter:v4.0.0
+```
+
 # 7. 总结
 
 官方文档已非常详尽，主要遇到两个问题
@@ -765,3 +838,4 @@ rbd-provisioner 用的ceph版本是13 应该是版本不同消息结构不同导
   - 自己打镜像也成
 
   更换镜像地址是最简单的
+  
