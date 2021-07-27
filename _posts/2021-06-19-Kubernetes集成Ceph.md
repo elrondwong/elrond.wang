@@ -823,6 +823,14 @@ kubectl get pods -l app=csi-cephfsplugin-provisioner -o jsonpath="{.items[*].spe
       3 quay.io/k8scsi/csi-snapshotter:v4.0.0
 ```
 
+- 列举pod的所有容器
+
+```bash
+kubectl logs csi-cephfsplugin-provisioner-7fcc78cf84-j5cqm
+# 输出如下，方括号中是容器名列表
+error: a container name must be specified for pod csi-cephfsplugin-provisioner-7fcc78cf84-j5cqm, choose one of: [csi-provisioner csi-resizer csi-snapshotter csi-cephfsplugin-attacher csi-cephfsplugin liveness-prometheus]
+```
+
 # 7. 总结
 
 官方文档已非常详尽，主要遇到两个问题
