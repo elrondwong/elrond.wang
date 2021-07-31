@@ -12,7 +12,7 @@ Thanks Jekyll and Github Page!
 
 |序号|文章标题|文章类别|发布日期|
 |----|----|----|----|
-|1|[OpenStack使用Placement做资源管理时虚拟机无法调度的一次拍错记录](http://elrond.wang/2021/07/31/OpenStack使用Placement做资源管理时虚拟机无法调度的一次拍错记录)||2021-07-31|
+|1|[OpenStack使用Placement做资源管理时虚拟机无法调度的一次排错记录](http://elrond.wang/2021/07/31/OpenStack使用Placement做资源管理时虚拟机无法调度的一次拍错记录)||2021-07-31|
 |2|[Leveldb的部署和使用](http://elrond.wang/2021/06/26/Leveldb的部署和使用)||2021-06-26|
 |3|[RBD对接OpenStack并支持虚拟机秒起](http://elrond.wang/2021/06/26/RBD对接OpenStack并支持虚拟机秒起)||2021-06-26|
 |4|[RGW-index对象存储在rocksdb中的组织形式](http://elrond.wang/2021/06/26/RGW-index对象存储在rocksdb中的组织形式)||2021-06-26|
