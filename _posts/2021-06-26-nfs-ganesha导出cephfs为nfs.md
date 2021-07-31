@@ -108,7 +108,7 @@ systemctl start nfs-ganesha nfs-utils rpcbind
 
 ```bash
 mkdir /opt/ganesha
-mount -t nfs 172.16.81.237:/cephfs  /opt/ganesha**
+mount -t nfs 172.16.2.237:/cephfs  /opt/ganesha**
 ```
 
 查看挂载
@@ -116,7 +116,7 @@ mount -t nfs 172.16.81.237:/cephfs  /opt/ganesha**
 ```bash
 df
 # output
-172.16.81.237:/cephfs 6576680960 96047104 6480633856    2% /opt/ganesha
+172.16.2.237:/cephfs 6576680960 96047104 6480633856    2% /opt/ganesha
 ```
 
 进入挂载点就可以进行文件系统操作了

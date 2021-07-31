@@ -98,7 +98,7 @@ ceph -s
 ```bash
 ceph mon stat
 # 输出如下
-e2: 3 mons at {ceph01=[v2:172.16.81.237:3300/0,v1:172.16.81.237:6789/0],ceph02=[v2:172.16.81.238:3300/0,v1:172.16.81.238:6789/0],ceph03=[v2:172.16.81.239:3300/0,v1:172.16.81.239:6789/0]}, election epoch 10, leader 0 ceph01, quorum 0,1,2 ceph01,ceph02,ceph03
+e2: 3 mons at {ceph01=[v2:172.16.2.237:3300/0,v1:172.16.2.237:6789/0],ceph02=[v2:172.16.2.238:3300/0,v1:172.16.2.238:6789/0],ceph03=[v2:172.16.2.239:3300/0,v1:172.16.2.239:6789/0]}, election epoch 10, leader 0 ceph01, quorum 0,1,2 ceph01,ceph02,ceph03
 ```
 
 - 每个客户端安装`ceph-common`
@@ -127,9 +127,9 @@ data:
       {
         "clusterID": "8cfb6405-d75e-466a-8abf-51ba0480d783",
         "monitors": [
-          "172.16.81.237:6789",
-          "172.16.81.238:6789",
-          "172.16.81.239:6789"
+          "172.16.2.237:6789",
+          "172.16.2.238:6789",
+          "172.16.2.239:6789"
         ]
       }
     ]
@@ -300,7 +300,7 @@ metadata:
   name: rbd
 provisioner: kubernetes.io/rbd
 parameters:
-  monitors: 172.16.81.237:6789,172.16.81.238:6789,172.16.81.239:6789
+  monitors: 172.16.2.237:6789,172.16.2.238:6789,172.16.2.239:6789
   adminId: admin
   adminSecretName: ceph-secret
   adminSecretNamespace: kube-system
@@ -471,7 +471,7 @@ ceph auth get client.admin
 ```bash
 ceph mon stat
 # 输出如下
-e2: 3 mons at {ceph01=[v2:172.16.81.237:3300/0,v1:172.16.81.237:6789/0],ceph02=[v2:172.16.81.238:3300/0,v1:172.16.81.238:6789/0],ceph03=[v2:172.16.81.239:3300/0,v1:172.16.81.239:6789/0]}, election epoch 10, leader 0 ceph01, quorum 0,1,2 ceph01,ceph02,ceph03
+e2: 3 mons at {ceph01=[v2:172.16.2.237:3300/0,v1:172.16.2.237:6789/0],ceph02=[v2:172.16.2.238:3300/0,v1:172.16.2.238:6789/0],ceph03=[v2:172.16.2.239:3300/0,v1:172.16.2.239:6789/0]}, election epoch 10, leader 0 ceph01, quorum 0,1,2 ceph01,ceph02,ceph03
 ```
 
 ## 4.2. 部署ceph-csi-cephfs
@@ -506,9 +506,9 @@ data:
       {
         "clusterID": "8cfb6405-d75e-466a-8abf-51ba0480d783",
         "monitors": [
-          "172.16.81.237:6789",
-          "172.16.81.238:6789",
-          "172.16.81.239:6789"
+          "172.16.2.237:6789",
+          "172.16.2.238:6789",
+          "172.16.2.239:6789"
         ]
       }
     ]
@@ -656,7 +656,7 @@ kubectl apply -f pod.yaml
 kubectl exec -it csi-cephfs-demo-pod df
 # 输出如下 可以看出以cephfs方式挂载
 # 且目录为/volumes/csi/csi-vol-0af68b6a-cfff-11eb-b335-fad30d8a412c/c721c454-23d6-4d73-8a4f-6d051e322487
-172.16.81.237:6789,172.16.81.238:6789,172.16.81.239:6789:/volumes/csi/csi-vol-0af68b6a-cfff-11eb-b335-fad30d8a412c/c721c454-23d6-4d73-8a4f-6d051e322487   1048576       0   1048576   0% /var/lib/www
+172.16.2.237:6789,172.16.2.238:6789,172.16.2.239:6789:/volumes/csi/csi-vol-0af68b6a-cfff-11eb-b335-fad30d8a412c/c721c454-23d6-4d73-8a4f-6d051e322487   1048576       0   1048576   0% /var/lib/www
 ```
 
 
