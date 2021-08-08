@@ -5,7 +5,14 @@ catalog: true
 tag: [Linux,Ubuntu,Docker]
 ---
 
-# 问题描述
+<!-- TOC -->
+
+- [1. 问题描述](#1-问题描述)
+- [2. 解决方式](#2-解决方式)
+
+<!-- /TOC -->
+
+# 1. 问题描述
 
 |组件|版本|备注|
 |Ubuntu Docker Image|20.04||
@@ -22,7 +29,7 @@ google了半天，该试的方法都试了，最后想到直接去 stackoverflow
 
 计算机使用类常规问题还是问stackoverflow要比google来的快
 
-# 解决方式
+# 2. 解决方式
 
 ```bash
 touch /etc/apt/apt.conf.d/99verify-peer.conf \
