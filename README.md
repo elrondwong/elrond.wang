@@ -12,11 +12,12 @@ Thanks Jekyll and Github Page!
 
 |序号|文章标题|文章类别|发布日期|
 |----|----|----|----|
-|1|[OpenStack使用Placement做资源管理时虚拟机无法调度的一次排错记录](http://elrond.wang/2021/07/31/OpenStack使用Placement做资源管理时虚拟机无法调度的一次排错记录)||2021-07-31|
-|2|[Leveldb的部署和使用](http://elrond.wang/2021/06/26/Leveldb的部署和使用)||2021-06-26|
-|3|[RBD对接OpenStack并支持虚拟机秒起](http://elrond.wang/2021/06/26/RBD对接OpenStack并支持虚拟机秒起)||2021-06-26|
-|4|[RGW-index对象存储在rocksdb中的组织形式](http://elrond.wang/2021/06/26/RGW-index对象存储在rocksdb中的组织形式)||2021-06-26|
-|5|[nfs-ganesha导出cephfs为nfs](http://elrond.wang/2021/06/26/nfs-ganesha导出cephfs为nfs)||2021-06-26|
-|6|[Leveldb文档](http://elrond.wang/2021/06/26/Leveldb文档)||2021-06-26|
-|7|[rbd的寻址(rbd上传下载分析)](http://elrond.wang/2021/06/26/rbd的寻址(rbd上传下载分析))||2021-06-26|
-|8|[Kubernetes集成Ceph](http://elrond.wang/2021/06/19/Kubernetes集成Ceph)||2021-06-19|
+|1|[Ubuntu-docker镜像apt无法使用问题](http://elrond.wang/2021/08/08/Ubuntu-docker镜像apt无法使用问题)||2021-08-08|
+|2|[OpenStack使用Placement做资源管理时虚拟机无法调度的一次排错记录](http://elrond.wang/2021/07/31/OpenStack使用Placement做资源管理时虚拟机无法调度的一次排错记录)||2021-07-31|
+|3|[Leveldb的部署和使用](http://elrond.wang/2021/06/26/Leveldb的部署和使用)||2021-06-26|
+|4|[RBD对接OpenStack并支持虚拟机秒起](http://elrond.wang/2021/06/26/RBD对接OpenStack并支持虚拟机秒起)||2021-06-26|
+|5|[RGW-index对象存储在rocksdb中的组织形式](http://elrond.wang/2021/06/26/RGW-index对象存储在rocksdb中的组织形式)||2021-06-26|
+|6|[nfs-ganesha导出cephfs为nfs](http://elrond.wang/2021/06/26/nfs-ganesha导出cephfs为nfs)||2021-06-26|
+|7|[Leveldb文档](http://elrond.wang/2021/06/26/Leveldb文档)||2021-06-26|
+|8|[rbd的寻址(rbd上传下载分析)](http://elrond.wang/2021/06/26/rbd的寻址(rbd上传下载分析))||2021-06-26|
+|9|[Kubernetes集成Ceph](http://elrond.wang/2021/06/19/Kubernetes集成Ceph)||2021-06-19|
