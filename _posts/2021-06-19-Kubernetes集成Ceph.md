@@ -545,7 +545,7 @@ kubectl create -f csi-cephfsplugin.yaml
 
 ```bash
 sed -i 's/cephcsi:v3.3.0/cephcsi:v3.2-canary/g' csi-cephfsplugin-provisioner.yaml
-sed -i 's/cephcsi:v3.3.0/cephcsi:v3.3.0/g' csi-cephfsplugin.yaml
+sed -i 's/cephcsi:v3.3.0/cephcsi:v3.2-canary/g' csi-cephfsplugin.yaml
 ```
 
 ### 4.3.3. 确认部署成功
