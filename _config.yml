@@ -62,7 +62,7 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 friends: [
     {
         title: "ini32bit",
-        href: "int32bit.sh"
+        href: "https://int32bit.sh"
     },{
         title: "宇飞",
         href: "https://www.cnblogs.com/zhangyufei/"
