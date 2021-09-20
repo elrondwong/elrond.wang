@@ -50,6 +50,6 @@ tag: [OpenStack, Ceph]
 - 启动
 - 重建成功
 
-具体代码流程可以参考这里，(rebuild时序图)[https://raw.githubusercontent.com/int32bit/openstack-workflow/master/output/nova/rebuild.png]
+具体代码流程可以参考这里，[rebuild时序图](https://raw.githubusercontent.com/int32bit/openstack-workflow/master/output/nova/rebuild.png)
 
 修复之后功能OK
