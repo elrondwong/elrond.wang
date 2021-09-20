@@ -59,34 +59,30 @@ featured-tags: true                     # whether or not using Feature-Tags
 featured-condition-size: 1              # A tag will be featured if the size of it is more than this condition value
 
 # Friends
-# friends: [
-#     {
-#         title: "cnblog博客地址",
-#         href: "http://www.cnblogs.com/int32bit/"
-#     },{
-#         title: "麦子迈",
-#         href: "http://www.wzxue.com/"
-#     },{
-#         title: "酷壳",
-#         href: "http://coolshell.cn/"
-#     },{
-#         title: "陈沙克日志",
-#         href: "http://www.chenshake.com/"
-#     },{
-#         title: "世民谈云计算",
-#         href: "http://www.cnblogs.com/sammyliu/"
-#     },{
-#         title: "结构之法，算法之道",
-#         href: "http://blog.csdn.net/v_july_v"
-#     },{
-#     },{
-#         title: "阮一峰的网络日志",
-#         href: "http://www.ruanyifeng.com/"
-#     },{
-#         title: "Leetcode解题",
-#         href: "https://github.com/int32bit/leetcode"
-#     },{
-#         title: "依云's Blog",
-#         href: "http://blog.lilydjwg.me/"
-#     }
-# ]
+friends: [
+    {
+        title: "ini32bit",
+        href: "int32bit.sh"
+    },{
+        title: "宇飞",
+        href: "https://www.cnblogs.com/zhangyufei/"
+    },{
+        title: "iceyao",
+        href: "http://www.iceyao.com.cn/"
+    },{
+        title: "小甲鱼",
+        href: "https://krunerge.github.io/"
+    },{
+        title: "徐小胖",
+        href: "http://www.xuxiaopang.com/"
+    },{
+        title: "by",
+        href: "http://www.hanbaoying.com/"
+    },{
+        title: "面向信仰编程",
+        href: "https://draveness.me/"
+    },{
+        title: "koenli",
+        href: "http://koenli.com/"
+    }
+]
