@@ -35,7 +35,7 @@ tag: [OpenStack, Ceph]
 
 # 3. 修复方案
 
-将原来的卷删除掉，使用冲撞的虚拟机创建一个新的卷挂给虚拟机，实现代码 [Replace root volume during rebuild](https://review.opendev.org/c/openstack/nova/+/305079/22/nova/compute/manager.py#2617)
+将原来的卷删除掉，使用重装的虚拟机创建一个新的卷挂给虚拟机，实现代码 [Replace root volume during rebuild](https://review.opendev.org/c/openstack/nova/+/305079/22/nova/compute/manager.py#2617)
 
 # 4. 分析过程
 
