@@ -53,3 +53,5 @@ tag: [OpenStack, Ceph]
 具体代码流程可以参考这里，[rebuild时序图](https://raw.githubusercontent.com/int32bit/openstack-workflow/master/output/nova/rebuild.png)
 
 修复之后功能OK
+
+刚找资料查看了下[kk的博客](https://krunerge.github.io/2018/10/12/miss-image-base-image-ref/)，看到rebuild之后虚拟机创建的快照少个元数据 `base_image_ref` 通过博客上面的方式修复即可
