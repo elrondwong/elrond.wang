@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 2021-10-17-CephFS高可用的NFS-Ganesha网关
+title: CephFS高可用的NFS-Ganesha网关
 catalog: true
 tag: [Ceph, NFS, Linux]
 ---
