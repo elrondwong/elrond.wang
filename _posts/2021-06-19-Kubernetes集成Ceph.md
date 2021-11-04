@@ -52,6 +52,10 @@ tag: [Ceph, Kubernetes]
       - [6.3.2.1. pvc创建流程](#6321-pvc创建流程)
       - [6.3.2.2. 分析过程](#6322-分析过程)
     - [6.3.3. 附](#633-附)
+  - [6.4. 新加node节点无法挂载pvc](#64-新加node节点无法挂载pvc)
+    - [6.4.1. 问题现象](#641-问题现象)
+    - [6.4.2. 问题原因](#642-问题原因)
+    - [6.4.3. 问题排查](#643-问题排查)
 - [7. 总结](#7-总结)
 
 <!-- /TOC -->
@@ -831,6 +835,77 @@ kubectl logs csi-cephfsplugin-provisioner-7fcc78cf84-j5cqm
 error: a container name must be specified for pod csi-cephfsplugin-provisioner-7fcc78cf84-j5cqm, choose one of: [csi-provisioner csi-resizer csi-snapshotter csi-cephfsplugin-attacher csi-cephfsplugin liveness-prometheus]
 ```
 
+## 6.4. 新加node节点无法挂载pvc
+
+### 6.4.1. 问题现象
+
+describe pod 关键错误
+
+```log
+Warning FailedMount 19s kubelet     MounntVolume.MountDevice failed for volume "pvc-d8273f30-5b17-4151-bb80-053632495303": kubernetes.io/csi: attacher.MountDevice failed to create newCsiDriverClient: driver name cephfs.csi.ceph.com not found in the list of registered CSI drivers
+```
+
+### 6.4.2. 问题原因
+
+`csi-cephfsplugin` `daemonSet` 中 `kubelet` 中的数据目录与实际节点上的不一致
+
+- csi-cephfsplugin 定义
+
+```yaml
+kubectl get ds csi-cephfsplugin -o yaml
+        - mountPath: /opt/kubelet/pods
+          mountPropagation: Bidirectional
+          name: mountpoint-dir
+        - mountPath: /opt/kubelet/plugins
+          mountPropagation: Bidirectional
+          name: plugin-dir
+      volumes:
+      - hostPath:
+          path: /opt/kubelet/plugins/cephfs.csi.ceph.com/
+          type: DirectoryOrCreate
+        name: socket-dir
+      - hostPath:
+          path: /opt/kubelet/plugins_registry/
+          type: DirectoryOrCreate
+        name: registration-dir
+      - hostPath:
+          path: /opt/kubelet/pods
+          type: DirectoryOrCreate
+        name: mountpoint-dir
+      - hostPath:
+          path: /opt/kubelet/plugins
+          type: Directory
+        name: plugin-dir
+```
+
+- kubelet 启动配置
+
+```yaml
+/usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --network-plugin=cni --pod-infra-container-image=k8s.gcr.io/pause:3.2
+```
+
+两者对比, `kubectl` `root-dir` 未定义，默认为`/var/lib/kubelet`, 指定kubectl数据目录即可(按实际情况选择修改kubelet/daemonSet) `--root-dir=/opt/kubectl`
+
+修改之后，正常挂载
+
+```bash
+/usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --network-plugin=cni --pod-infra-container-image=k8s.gcr.io/pause:3.2 --root-dir=/opt/kubelet
+```
+
+### 6.4.3. 问题排查
+
+[csi 架构图](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/storage/container-storage-interface_diagram1.png?raw=true)
+
+- master安装 `csi-cephfsplugin-provisioner`
+- node安装 `csi-cephfsplugin`
+
+检查kubectl日志
+
+```log
+Oct 30 19:06:01 szidc-dev-ep-k8snode-83-226 kubelet: E1031 03:06:01.800245   28008 reconciler.go:193] operationExecutor.UnmountVolume failed (controllerAttachDetachEnabled true) for volume "volume-toi4cquf" (UniqueName: "kubernetes.io/csi/cephfs.csi.ceph.com^0001-0024-8cfb6405-d75e-466a-8abf-51ba0480d783-0000000000000001-6b07dbf4-15ee-11ec-a5ca-36135b1d3054") pod "c0a92c7c-2b0f-454a-b914-f16e18193afa" (UID: "c0a92c7c-2b0f-454a-b914-f16e18193afa") : UnmountVolume.NewUnmounter failed for volume "volume-toi4cquf" (UniqueName: "kubernetes.io/csi/cephfs.csi.ceph.com^0001-0024-8cfb6405-d75e-466a-8abf-51ba0480d783-0000000000000001-6b07dbf4-15ee-11ec-a5ca-36135b1d3054") pod "c0a92c7c-2b0f-454a-b914-f16e18193afa" (UID: "c0a92c7c-2b0f-454a-b914-f16e18193afa") : kubernetes.io/csi: unmounter failed to load volume data file [/opt/kubelet/pods/c0a92c7c-2b0f-454a-b914-f16e18193afa/volumes/kubernetes.io~csi/pvc-dc0625c9-e598-48c0-9695-c6e0ee64248f/mount]: kubernetes.io/csi: failed to open volume data file [/opt/kubelet/pods/c0a92c7c-2b0f-454a-b914-f16e18193afa/volumes/kubernetes.io~csi/pvc-dc0625c9-e598-48c0-9695-c6e0ee64248f/vol_data.json]: open /opt/kubelet/pods/c0a92c7c-2b0f-454a-b914-f16e18193afa/volumes/kubernetes.io~csi/pvc-dc0625c9-e598-48c0-9695-c6e0ee64248f/vol_data.json: no such file or directory
+```
+
+从上面即可看出问题所在
 # 7. 总结
 
 官方文档已非常详尽，主要遇到两个问题
@@ -847,3 +922,4 @@ error: a container name must be specified for pod csi-cephfsplugin-provisioner-7
 
   更换镜像地址是最简单的
   
+[^1](https://github.com/container-storage-interface/spec/blob/master/spec.md)
