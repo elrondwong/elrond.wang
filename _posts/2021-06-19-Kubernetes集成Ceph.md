@@ -894,7 +894,7 @@ kubectl get ds csi-cephfsplugin -o yaml
 
 ### 6.4.3. 问题排查
 
-[csi 架构图](https://raw.githubusercontent.com/kubernetes/community/master/contributors/design-proposals/storage/container-storage-interface_diagram1.png)
+![csi 架构图](https://raw.githubusercontent.com/kubernetes/community/master/contributors/design-proposals/storage/container-storage-interface_diagram1.png)
 
 - master安装 `csi-cephfsplugin-provisioner`
 - node安装 `csi-cephfsplugin`
