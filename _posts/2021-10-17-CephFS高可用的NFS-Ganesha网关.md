@@ -10,45 +10,45 @@ tag: [Ceph, NFS, Linux]
 - [1. 概述](#1-概述)
 - [2. 术语](#2-术语)
 - [3. nfs-ganesha](#3-nfs-ganesha)
-	- [3.1. 介绍](#31-介绍)
-	- [3.2. 架构](#32-架构)
-		- [3.2.1. 总体架构图](#321-总体架构图)
-		- [3.2.2. 架构说明](#322-架构说明)
-		- [3.2.3. genesha-rados-cluster设计](#323-genesha-rados-cluster设计)
-			- [3.2.3.1. 客户端恢复(单体情况)](#3231-客户端恢复单体情况)
-			- [3.2.3.2. 宽限期(单体情况)](#3232-宽限期单体情况)
-			- [3.2.3.3. Reboot Epochs](#3233-reboot-epochs)
-			- [3.2.3.4. gracedb](#3234-gracedb)
-			- [3.2.3.5. 集群](#3235-集群)
-	- [3.3. 高可用集群实现](#33-高可用集群实现)
+  - [3.1. 介绍](#31-介绍)
+  - [3.2. 架构](#32-架构)
+    - [3.2.1. 总体架构图](#321-总体架构图)
+    - [3.2.2. 架构说明](#322-架构说明)
+    - [3.2.3. genesha-rados-cluster设计](#323-genesha-rados-cluster设计)
+      - [3.2.3.1. 客户端恢复(单体情况)](#3231-客户端恢复单体情况)
+      - [3.2.3.2. 宽限期(单体情况)](#3232-宽限期单体情况)
+      - [3.2.3.3. Reboot Epochs](#3233-reboot-epochs)
+      - [3.2.3.4. gracedb](#3234-gracedb)
+      - [3.2.3.5. 集群](#3235-集群)
+  - [3.3. 高可用集群实现](#33-高可用集群实现)
 - [4. 部署](#4-部署)
-	- [4.1. 环境说明](#41-环境说明)
-	- [4.2. 安装软件](#42-安装软件)
-		- [4.2.1. 配置yum源](#421-配置yum源)
-		- [4.2.2. 安装](#422-安装)
-	- [4.3. ganesha配置](#43-ganesha配置)
-		- [4.3.1. /etc/ganesha/ganesha.conf](#431-etcganeshaganeshaconf)
-		- [4.3.2. 创建export文件并上传到ceph](#432-创建export文件并上传到ceph)
-		- [4.3.3. 创建第一个export目录](#433-创建第一个export目录)
-		- [4.3.4. 将节点加入gracedb集群](#434-将节点加入gracedb集群)
-	- [4.4. haproxy+keepalived](#44-haproxykeepalived)
-		- [4.4.1. haproxy](#441-haproxy)
-		- [4.4.2. keepalived](#442-keepalived)
-			- [4.4.2.1. 系统配置](#4421-系统配置)
-			- [4.4.2.2. 启动服务](#4422-启动服务)
+  - [4.1. 环境说明](#41-环境说明)
+  - [4.2. 安装软件](#42-安装软件)
+    - [4.2.1. 配置yum源](#421-配置yum源)
+    - [4.2.2. 安装](#422-安装)
+  - [4.3. ganesha配置](#43-ganesha配置)
+    - [4.3.1. /etc/ganesha/ganesha.conf](#431-etcganeshaganeshaconf)
+    - [4.3.2. 创建export文件并上传到ceph](#432-创建export文件并上传到ceph)
+    - [4.3.3. 创建第一个export目录](#433-创建第一个export目录)
+    - [4.3.4. 将节点加入gracedb集群](#434-将节点加入gracedb集群)
+  - [4.4. haproxy+keepalived](#44-haproxykeepalived)
+    - [4.4.1. haproxy](#441-haproxy)
+    - [4.4.2. keepalived](#442-keepalived)
+      - [4.4.2.1. 系统配置](#4421-系统配置)
+      - [4.4.2.2. 启动服务](#4422-启动服务)
 - [5. 验证](#5-验证)
-	- [5.1. 客户端没有io写入时服务端断网](#51-客户端没有io写入时服务端断网)
-	- [5.2. 客户端高io时服务端断网超过五分钟](#52-客户端高io时服务端断网超过五分钟)
-		- [5.2.1. 测试概况](#521-测试概况)
-		- [5.2.2. 具体测试现象与排查](#522-具体测试现象与排查)
-			- [5.2.2.1. 现象](#5221-现象)
-				- [5.2.2.1.1. 客户端](#52211-客户端)
-					- [5.2.2.1.1.1. 服务端恢复之后](#522111-服务端恢复之后)
-					- [5.2.2.1.1.2. 挂载一个ceph-fuse客户端](#522112-挂载一个ceph-fuse客户端)
-				- [5.2.2.1.2. 服务端](#52212-服务端)
-					- [5.2.2.1.2.1. 系统日志](#522121-系统日志)
+  - [5.1. 客户端没有io写入时服务端断网](#51-客户端没有io写入时服务端断网)
+  - [5.2. 客户端高io时服务端断网超过五分钟](#52-客户端高io时服务端断网超过五分钟)
+    - [5.2.1. 测试概况](#521-测试概况)
+    - [5.2.2. 具体测试现象与排查](#522-具体测试现象与排查)
+      - [5.2.2.1. 现象](#5221-现象)
+        - [5.2.2.1.1. 客户端](#52211-客户端)
+          - [5.2.2.1.1.1. 服务端恢复之后](#522111-服务端恢复之后)
+          - [5.2.2.1.1.2. 挂载一个ceph-fuse客户端](#522112-挂载一个ceph-fuse客户端)
+        - [5.2.2.1.2. 服务端](#52212-服务端)
+          - [5.2.2.1.2.1. 系统日志](#522121-系统日志)
 - [6. 附录](#6-附录)
-	- [6.1. 附录1: gracedb数据结构](#61-附录1-gracedb数据结构)
+  - [6.1. 附录1: gracedb数据结构](#61-附录1-gracedb数据结构)
 - [7. 参考](#7-参考)
 
 <!-- /TOC -->
@@ -777,6 +777,58 @@ value (52 bytes) :
 ganesha-rados-grace -p cephfs_data --ns nfs-ns --oid conf-ceph03
 cur=7021712291677762853 rec=7305734900415688548
 ======================================================
+```
+
+- rgw-export
+
+```bash
+rados get -p cephfs_data -N nfs-ns export-2 /tmp/export-2
+cat /tmp/export-2
+```
+
+```ini
+EXPORT {
+    FSAL {
+        secret_access_key = "2222";
+        user_id = "admin";
+        name = "RGW";
+        access_key_id = "11111";
+    }
+
+    pseudo = "/testrgw";
+    squash = "no_root_squash";
+    access_type = "RW";
+    path = "admin-tpuoosdody";
+    export_id = 2;
+    transports = "UDP", "TCP";
+    protocols = 3, 4;
+}
+```
+
+- cephfs-export
+
+```bash
+rados get -p cephfs_data -N nfs-ns export-1 /tmp/export-1
+cat /tmp/export-1
+```
+
+```ini
+EXPORT {
+    FSAL {
+        secret_access_key = "AQC5Z1Rh6Nu3BRAAc98ORpMCLu9kXuBh/k3oHA==";
+        user_id = "admin";
+        name = "CEPH";
+        filesystem = "cephfs";
+    }
+
+    pseudo = "/test";
+    squash = "no_root_squash";
+    access_type = "RW";
+    path = "/test001";
+    export_id = 1;
+    transports = "UDP", "TCP";
+    protocols = 3, 4;
+}
 ```
 
 # 7. 参考
