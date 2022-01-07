@@ -533,10 +533,10 @@ Oct  8 21:47:16 wanggangfeng-dev kernel: [<ffffffffaab92ed2>] system_call_fastpa
 
 dd 进程不会恢复状态，需要手动将其终结，客户端一会儿之后可以恢复状态
 
-客户端 
+客户端
 
 ```log
-Oct  8 21:54:22 wanggangfeng-dev kernel: NFS: nfs4_reclaim_open_state: unhandled error -121
+Oct  8 21:54:22 wanggangfeng-dev kernel: NFS: nfs4_reclaim_open_state: unhandled error -121 
 ```
 
 ###### 5.2.2.1.1.1. 服务端恢复之后
