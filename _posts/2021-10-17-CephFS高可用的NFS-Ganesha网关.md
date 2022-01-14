@@ -49,6 +49,12 @@ tag: [Ceph, NFS, Linux]
           - [5.2.2.1.2.1. 系统日志](#522121-系统日志)
 - [6. 附录](#6-附录)
   - [6.1. 附录1: gracedb数据结构](#61-附录1-gracedb数据结构)
+  - [6.2. ganesha是如何监听rados对象变化及时更新exporter的](#62-ganesha是如何监听rados对象变化及时更新exporter的)
+    - [6.2.1. ganesha处理](#621-ganesha处理)
+      - [6.2.1.1. ganesha配置启动之后watcher conf文件](#6211-ganesha配置启动之后watcher-conf文件)
+      - [6.2.1.2. watch到notify的处理](#6212-watch到notify的处理)
+      - [6.2.1.3. ganesha 进程收到 kill -SIGHUP pid的处理](#6213-ganesha-进程收到-kill--sighup-pid的处理)
+    - [6.2.2. 发送notify命令](#622-发送notify命令)
 - [7. 参考](#7-参考)
 
 <!-- /TOC -->
@@ -252,6 +258,9 @@ RADOS_URLS {
 # 通过watch ceph rados上面的ganesha配置来实现配置在线设置功能
 %url	rados://cephfs_data/nfs-ns/conf-ceph01
 ```
+
+> ganesha会watch这个对象，如果收到notify则触发相应的处理,详细参照附录6.2
+> 修改rados配置之后需要手动发送notify给 `rados://cephfs_data/nfs-ns/conf-ceph01` 才会使得 `ganesha` 重载配置
 
 ### 4.3.2. 创建export文件并上传到ceph
 
@@ -829,6 +838,98 @@ EXPORT {
     transports = "UDP", "TCP";
     protocols = 3, 4;
 }
+```
+
+## 6.2. ganesha是如何监听rados对象变化及时更新exporter的
+
+[src/doc/man/ganesha-export-config.rst](https://github.com/nfs-ganesha/nfs-ganesha/blob/next/src/doc/man/ganesha-export-config.rst#configuration-reload)
+### 6.2.1. ganesha处理
+
+[ganesha源码](https://github.com/nfs-ganesha/nfs-ganesha)
+#### 6.2.1.1. ganesha配置启动之后watcher conf文件
+
+watch的是配置文件watch-url对象 `rados://cephfs_data/nfs-ns/conf-ceph01`
+
+ganesha服务启动即开始watch
+
+`src/config_parsing/conf_url_rados.c`
+
+```cpp
+int rados_url_setup_watch(void)
+{
+  ...
+  ret = rados_watch3(rados_watch_io_ctx, obj, &rados_watch_cookie,
+        rados_url_watchcb, NULL, 30, NULL);
+  ...
+}
+```
+
+#### 6.2.1.2. watch到notify的处理
+
+收到对象的 notify 之后 `rados_url_watchcb` 处理
+
+- notify已收到(如果不回则这次notify会被服务端阻塞直到超时)
+- 给ganesha发送 `kill -SIGHUP <pid>`
+
+```log
+14/01/2022 18:20:37 : epoch 61e13ebd : ceph01 : ganesha.nfsd-697287[sigmgr] sigmgr_thread :MAIN :EVENT :SIGHUP_HANDLER: Received SIGHUP.... initiating export list reload
+```
+
+```cpp
+static void rados_url_watchcb(void *arg, uint64_t notify_id, uint64_t handle,
+			      uint64_t notifier_id, void *data, size_t data_len)
+{
+	int ret;
+
+	/* ACK it to keep things moving */
+	ret = rados_notify_ack(rados_watch_io_ctx, rados_watch_oid, notify_id,
+				rados_watch_cookie, NULL, 0);
+	if (ret < 0)
+		LogEvent(COMPONENT_CONFIG, "rados_notify_ack failed: %d", ret);
+
+	/* Send myself a SIGHUP */
+	kill(getpid(), SIGHUP);
+}
+```
+
+#### 6.2.1.3. ganesha 进程收到 kill -SIGHUP pid的处理
+
+```cpp
+static void *sigmgr_thread(void *UnusedArg)
+{
+	...
+  if (signal_caught == SIGHUP) {
+    LogEvent(COMPONENT_MAIN,
+        "SIGHUP_HANDLER: Received SIGHUP.... initiating export list reload");
+    reread_config();
+```
+
+收到 `SiGHUP` 日志之后
+
+- 重载配置
+- 打印日志
+
+### 6.2.2. 发送notify命令
+
+message 发送空即可，ganesha貌似没有处理 message
+
+- 命令行
+
+```bash
+rados listwatchers -p cephfs_data -N nfs-ns  conf-ceph01
+watcher=172.16.80.10:0/2697396434 client.249443937 cookie=34631536
+watcher=172.16.80.86:0/1600735750 client.250136575 cookie=37325776
+```
+
+- librados
+
+> `rados_notify` 要被弃用
+
+```c
+CEPH_RADOS_API int rados_notify2(rados_ioctx_t io, const char *o,
+				 const char *buf, int buf_len,
+				 uint64_t timeout_ms,
+				 char **reply_buffer, size_t *reply_buffer_len);
 ```
 
 # 7. 参考
