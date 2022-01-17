@@ -904,14 +904,14 @@ static void *sigmgr_thread(void *UnusedArg)
     reread_config();
 ```
 
-收到 `SiGHUP` 日志之后
+收到 `SiGHUP` 之后
 
 - 重载配置
 - 打印日志
 
 ### 6.2.2. 发送notify命令
 
-message 发送空即可，ganesha貌似没有处理 message
+message 发送空即可，ganesha 没有处理 message
 
 - 命令行
 
@@ -923,7 +923,7 @@ watcher=172.16.80.86:0/1600735750 client.250136575 cookie=37325776
 
 - librados
 
-> `rados_notify` 要被弃用
+> `rados_notify` 要被弃用，使用 `rados_notify2`
 
 ```c
 CEPH_RADOS_API int rados_notify2(rados_ioctx_t io, const char *o,
