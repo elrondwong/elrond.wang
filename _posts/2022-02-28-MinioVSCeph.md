@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Minio集群部署
+title: Minio VS Ceph
 catalog: true
 tag: [Minio, Ceph, 云原生]
 ---
@@ -277,6 +277,8 @@ Ceph主要使用邮件列表，Minio使用slack，slack实时性更强、效率�
 **如果有Iaas平台、块存储、文件系统需求，需要做商业化的存储产品、团队处于初期，则Ceph无可比拟。**
 
 # 4. 参考
+
+- [Minio部署以及功能简单说明](https://elrond.wang/2022/02/28/Minio%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/)
 
 [^1]:https://en.wikipedia.org/wiki/Comparison_of_distributed_file_systems
 [^2]:https://github.com/orgs/minio/repositories?page=1&type=all
