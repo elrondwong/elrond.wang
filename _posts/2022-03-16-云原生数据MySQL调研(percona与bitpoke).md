@@ -86,6 +86,9 @@ my-cluster-backup-backup   1/1           76s        3h13m
 
 申请数据库实例，即创建一个数据库集群
 
+> v1.0之前默认MySQL版本是5.7.31 如果需要部署 MySQL 8.0，修改 `example-cluster.yaml` 中 `mysqlVersion: "8.0"`
+> 注意⚠️: `#image: percona:8.0` 保持注释状态
+
 ```bash
 kubectl apply -f example-cluster-secret.yaml
 kubectl apply -f example-cluster.yaml
