@@ -54,7 +54,7 @@ tag: [MySQL， 云原生]
 
 网上没有相关的架构图，相对简单，使用原生的mysql master/slave 模式高可用，使用 orchestrator 实现master/slave的切换，使用jobs+xtrabackup 实现数据库的定时在线备份
 
-![](/img/posts/云原生数据MySQL调研(percona与bitpoke)/mysql-operator技术架构.png)
+![mysql-operator技术架构](/img/posts/云原生数据MySQL调研(percona与bitpoke)/mysql-operator技术架构.png)
 
 ### 2.1.1. k8s服务实体
 
@@ -64,6 +64,9 @@ mysqlbackups.mysql.presslabs.org                      2022-03-15T03:26:43Z
 mysqlclusters.mysql.presslabs.org                     2022-03-15T03:26:43Z
 mysqldatabases.mysql.presslabs.org                    2022-03-15T03:26:43Z
 mysqlusers.mysql.presslabs.org                        2022-03-15T03:26:43Z
+# statefulset
+my-cluster-mysql   2/2     45h
+mysql-operator     1/1     2d3h
 # pod
 my-cluster-backup-backup-pdh55                       0/1     Completed          0          3h12m -- 备份
 # mysql sidecar metrics-exporter pt-heartbeat
@@ -278,6 +281,9 @@ cluster1-haproxy-replicas         ClusterIP   10.233.54.153   <none>        3306
 cluster1-pxc                      ClusterIP   None            <none>        3306/TCP,33062/TCP,33060/TCP            12m
 cluster1-pxc-unready              ClusterIP   None            <none>        3306/TCP,33062/TCP,33060/TCP            12m
 percona-xtradb-cluster-operator   ClusterIP   10.233.14.161   <none>        443/TCP                                 12m
+# statefulset
+cluster1-haproxy   3/3     29h
+cluster1-pxc       3/3     29h
 # deployment
 percona-xtradb-cluster-operator   1/1     1            1           17m
 # po
