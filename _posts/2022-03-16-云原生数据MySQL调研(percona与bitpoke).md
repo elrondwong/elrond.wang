@@ -27,6 +27,9 @@ tag: [MySQL， 云原生]
   - [3.2. 系统架构](#32-系统架构)
     - [3.2.1. K8S服务实体](#321-k8s服务实体)
   - [3.3. 优劣势总结](#33-优劣势总结)
+- [4. 附录](#4-附录)
+  - [4.1. 数据库半同步支持](#41-数据库半同步支持)
+    - [4.1.1. bitpoke](#411-bitpoke)
 - [4. 参考](#4-参考)
 
 <!-- /TOC -->
@@ -308,6 +311,49 @@ percona-xtradb-cluster-operator-69dc6dd7cc-8h78q   1/1     Running   0          
 - 对数据有强一致性需求可选该方案
 
 OpenStack集群用的便是 HAProxy + Galera，数据量大、掉电之后恢复难度很大
+
+# 4. 附录
+
+## 4.1. 数据库半同步支持
+
+### 4.1.1. bitpoke
+
+参照 https://github.com/bitpoke/mysql-operator/issues/519
+
+```yaml
+apiVersion: mysql.presslabs.org/v1alpha1
+kind: MysqlCluster
+metadata:
+  name: example-cluster
+spec:
+  mysqlConf:
+    plugin-load: semisync_master.so:semisync_slave.so
+    rpl-semi-sync-master-enabled: 1
+    rpl-semi-sync-master-timeout: 1000
+    rpl-semi-sync-master-wait-for-slave-count: 1
+    rpl-semi-sync-slave-enabled: 1
+    slave-compressed-protocol: "off"
+```
+
+```bash
+show variables like '%Rpl%';
++-------------------------------------------+------------+
+| Variable_name                             | Value      |
++-------------------------------------------+------------+
+| rpl_read_size                             | 8192       |
+| rpl_semi_sync_master_enabled              | ON         |
+| rpl_semi_sync_master_timeout              | 1000       |
+| rpl_semi_sync_master_trace_level          | 32         |
+| rpl_semi_sync_master_wait_for_slave_count | 1          |
+| rpl_semi_sync_master_wait_no_slave        | ON         |
+| rpl_semi_sync_master_wait_point           | AFTER_SYNC |
+| rpl_semi_sync_slave_enabled               | ON         |
+| rpl_semi_sync_slave_trace_level           | 32         |
+| rpl_stop_slave_timeout                    | 31536000   |
++-------------------------------------------+------------+
+```
+
+[启用半同步之后orchestrator的强制半同步false解释](https://github.com/openark/orchestrator/issues/690)
 
 # 4. 参考
 
