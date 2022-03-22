@@ -30,6 +30,9 @@ tag: [MySQL， 云原生]
 - [4. 附录](#4-附录)
   - [4.1. 数据库半同步支持](#41-数据库半同步支持)
     - [4.1.1. bitpoke](#411-bitpoke)
+  - [服务提供方式](#服务提供方式)
+  - [节点亲和/优先级配置](#节点亲和优先级配置)
+    - [bitpoke](#bitpoke)
 - [4. 参考](#4-参考)
 
 <!-- /TOC -->
@@ -362,6 +365,63 @@ show variables like '%Rpl%';
 ```
 
 [启用半同步之后orchestrator的强制半同步false解释](https://github.com/openark/orchestrator/issues/690)
+
+## 服务提供方式
+
+默认都是以service clusterip方式提供，外部无法访问，外部如果需要访问的话需要修改operator代码或者单处创建service
+
+## 节点亲和/优先级配置
+
+### bitpoke
+
+参照 [example-cluster](https://github.com/bitpoke/mysql-operator/blob/master/examples/example-cluster.yaml)
+
+```yaml
+  ## Specify additional pod specification
+  # podSpec:
+  #   imagePullSecrets: []
+  #   labels: {}
+  #   annotations: {}
+  #   affinity:
+  #     podAntiAffinity:
+  #       preferredDuringSchedulingIgnoredDuringExecution:
+  #         weight: 100
+  #         podAffinityTerm:
+  #           topologyKey: "kubernetes.io/hostname"
+  #           labelSelector:
+  #             matchlabels: <cluster-labels>
+  #   backupAffinity: {}
+  #   backupNodeSelector: {}
+  #   backupPriorityClassName:
+  #   backupTolerations: []
+  #   # Override the default preStop hook with a custom command/script
+  #   mysqlLifecycle:
+  #     preStop:
+  #       exec:
+  #         command:
+  #           - /scripts/demote-if-master
+  #   nodeSelector: {}
+  #   resources:
+  #     requests:
+  #       memory: 1G
+  #       cpu:    200m
+  #   tolerations: []
+  #   priorityClassName:
+  #   serviceAccountName: default
+  #   # Use a initContainer to fix the permissons of a hostPath volume.
+  #   initContainers:
+  #     - name: volume-permissions
+  #       image: busybox
+  #       securityContext:
+  #         runAsUser: 0
+  #       command:
+  #         - sh
+  #         - -c
+  #         - chmod 750 /data/mysql; chown 999:999 /data/mysql
+  #       volumeMounts:
+  #         - name: data
+  #           mountPath: /data/mysql
+```
 
 # 4. 参考
 
