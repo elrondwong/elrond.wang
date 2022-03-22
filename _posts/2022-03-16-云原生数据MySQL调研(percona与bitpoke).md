@@ -139,6 +139,11 @@ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 - 表管理
 - ...
 
+对外暴露，loadbalance方案还是merge中 [Allow additional service configuration for MysqlCluster](https://github.com/bitpoke/mysql-operator/pull/747) -- 20220322
+nodePort方式，需自定义operator [mysql-cluster custom service](https://github.com/bitpoke/mysql-operator/pull/794/files) -- 20220322 merge中，未支持数据库实例级别的nodePort
+
+当前如果需要暴露端口的话，crd是未支持的 需要自己创建service用nodePort暴露
+
 ### 2.2.3. 用户认证和权限管理
 
 与进程版mysql操作一致
@@ -236,10 +241,12 @@ helm一条命令搞定部署
 ## 2.4. 监控与维护
 
 ```bash
-#orchestrator
+# orchestrator
 nohup kubectl port-forward --address 0.0.0.0 service/mysql-operator 8082:80 &
-# prometheus
+# operator prometheus
 nohup kubectl port-forward --address 0.0.0.0 service/mysql-operator 9125:9125 &
+# mysql实例 prometheus
+nohup kubectl port-forward --address 0.0.0.0 service/mysql 9126:9125 &
 ```
 
 访问 http://172.16.0.60:8082/ 即可看到orchestrator的dashboard
@@ -250,7 +257,8 @@ orchestrator 可以自动实现master/slave的监视与切换，而且提供了�
 
 可以通过可视化界面对数据库副本进行简单的管理和观测
 
-prometheus 暴露了一些集群的数据，这里有个[issue](https://github.com/bitpoke/mysql-operator/issues/609)讨论如何设置servicemonitor的
+- mysql每个副本pod都有一个mysql-exporter，使用了promethues官方的mysql-exporter，暴露mysql基础数据, grafana也提供了dashboard id `7362`
+- operator-exporter 暴露了一些集群的数据，这里有个[issue](https://github.com/bitpoke/mysql-operator/issues/609)讨论如何设置servicemonitor的
 
 ## 2.5. 优劣势总结
 
