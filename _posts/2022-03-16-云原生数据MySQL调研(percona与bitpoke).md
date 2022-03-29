@@ -256,7 +256,7 @@ nohup kubectl port-forward --address 0.0.0.0 service/mysql 9126:9125 &
 
 orchestrator 可以自动实现master/slave的监视与切换，而且提供了可视化界面
 
-![orchestrator](img/posts/../../../img/posts/云原生数据MySQL调研(percona与bitpoke)/orchestrator.png)
+![orchestrator](/img/posts/云原生数据MySQL调研(percona与bitpoke)/orchestrator.png)
 
 可以通过可视化界面对数据库副本进行简单的管理和观测
 
