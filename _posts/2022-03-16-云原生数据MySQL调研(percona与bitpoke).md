@@ -82,6 +82,11 @@ my-cluster-mysql-1                                   4/4     Running            
 mysql-operator-0                                     2/2     Running            2          3h21m -- operator
 # job
 my-cluster-backup-backup   1/1           76s        3h13m
+# configMap
+# my-cluster-mysql 记录了MySQL实例的my.cnf，默认值在 pkg/controller/mysqlcluster/internal/syncer/config_map.go，在mysqlCluster的CR中修改的值会覆盖默认值，每次修改都会重启pod
+my-cluster-mysql                 2      12d
+mysql-operator-leader-election   0      15d
+mysql-operator-orc               2      15d
 ```
 
 ## 2.2. 典型场景
