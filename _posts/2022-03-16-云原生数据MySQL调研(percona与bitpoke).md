@@ -33,6 +33,10 @@ tag: [MySQL， 云原生]
   - [服务提供方式](#服务提供方式)
   - [节点亲和/优先级配置](#节点亲和优先级配置)
     - [bitpoke](#bitpoke)
+  - [数据存储PVC配置](#数据存储pvc配置)
+    - [bitpoke](#bitpoke-1)
+  - [修改密码](#修改密码)
+    - [bitpoke](#bitpoke-2)
 - [4. 参考](#4-参考)
 
 <!-- /TOC -->
@@ -99,6 +103,7 @@ mysql-operator-orc               2      15d
 
 > v1.0之前默认MySQL版本是5.7.31 如果需要部署 MySQL 8.0，修改 `example-cluster.yaml` 中 `mysqlVersion: "8.0"`
 > 注意⚠️: `#image: percona:8.0` 保持注释状态
+> 密码设置在 `example-cluster-secret.yaml`中， 当前不支持通过crd修改，只能通过mysql客户端修改
 
 ```bash
 kubectl apply -f example-cluster-secret.yaml
@@ -426,6 +431,36 @@ show variables like '%Rpl%';
   #       volumeMounts:
   #         - name: data
   #           mountPath: /data/mysql
+```
+
+## 数据存储PVC配置
+
+### bitpoke
+
+```yaml
+  volumeSpec:
+    persistentVolumeClaim:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: csi-cephfs-sc
+```
+
+## 修改密码
+
+### bitpoke
+
+> root密码在创建集群时设置过之后就无法修改，其他用户在创建mysqluser cr之后就无法修改，后来需要修改用户需通过mysql客户端
+
+这里有个[issue](https://github.com/bitpoke/mysql-operator/issues/75) 需要去watch secret改变而更新MySQL密码，但迟迟没有实现
+
+```bash
+kubectl exec -it my-cluster-mysql-0  -c mysql -- mysql --defaults-file=/etc/mysql/client.conf
+mysql> UPDATE mysql.user SET Password=PASSWORD('new password') WHERE User='root';
+mysql> FLUSH PRIVILEGES;
+mysql> quit;
 ```
 
 # 4. 参考
