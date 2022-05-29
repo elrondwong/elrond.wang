@@ -2,7 +2,7 @@
 layout: post
 title: 云原生数据库调研(vitess)
 catalog: true
-tag: [MySQL， 云原生]
+tag: [MySQL, 云原生]
 ---
 <!-- TOC -->
 
