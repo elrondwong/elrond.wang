@@ -2,7 +2,7 @@
 layout: post
 title: 云原生数据MySQL调研(percona与bitpoke)
 catalog: true
-tag: [MySQL， 云原生]
+tag: [MySQL, 云原生]
 ---
 <!-- TOC -->
 
