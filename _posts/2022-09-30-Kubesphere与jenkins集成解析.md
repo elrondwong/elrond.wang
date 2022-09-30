@@ -234,7 +234,7 @@ pod所使用的maven配置是挂载进去的，可以通过Jenkins->Configuratio
 
 - jenkins插件 `kubesphere-token-auth-plugin` 集成kubesphere的认证体系，在kubesphere调用jenkins时，都需要经过ks-apiserver进行token的review, 通过之后再调用jenkins执行实际动作
 
-![kubesphere-devops-auth](./images/kubesphere-devops-auth.png)
+![kubesphere-devops-auth](/img/posts/Kubesphere与Jenkins的集成解析/kubesphere-devops-auth.png)
 
 ### 4.2.2. jenkins使用驱动kubernetes实现动态slave
 
