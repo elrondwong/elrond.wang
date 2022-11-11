@@ -356,11 +356,11 @@ INFO: Disabled agent engine reconnects.
 
 # 7. 参考
 
-[jcli](https://github.com/jenkins-zh/jenkins-cli)
-[jcli使用手册](https://www.bookstack.cn/read/jenkins-cli-0.0.29-zh/263348)
-[custom-war-packager](https://github.com/jenkinsci/custom-war-packager)
-[jenkins kubernetes插件](https://plugins.jenkins.io/kubernetes/)
-[KubeSphere DevOps 3.0 流水线开发指南](https://kubesphere.com.cn/forum/d/2393-kubesphere-devops-30)
-[Jenkins 基于Kubernetes动态创建pod](https://blog.csdn.net/qq_34556414/article/details/120623844)
-[Can I use Jenkins kubernetes plugin when Jenkins server is outside of a kubernetes cluster?](https://stackoverflow.com/questions/40197607/can-i-use-jenkins-kubernetes-plugin-when-jenkins-server-is-outside-of-a-kubernet)
-[kubernetes-jenkins-integration](https://stackoverflow.com/questions/48827345/kubernetes-jenkins-integration)
+- [jcli](https://github.com/jenkins-zh/jenkins-cli)
+- [jcli使用手册](https://www.bookstack.cn/read/jenkins-cli-0.0.29-zh/263348)
+- [custom-war-packager](https://github.com/jenkinsci/custom-war-packager)
+- [jenkins kubernetes插件](https://plugins.jenkins.io/kubernetes/)
+- [KubeSphere DevOps 3.0 流水线开发指南](https://kubesphere.com.cn/forum/d/2393-kubesphere-devops-30)
+- [Jenkins 基于Kubernetes动态创建pod](https://blog.csdn.net/qq_34556414/article/details/120623844)
+- [Can I use Jenkins kubernetes plugin when Jenkins server is outside of a kubernetes cluster?](https://stackoverflow.com/questions/40197607/can-i-use-jenkins-kubernetes-plugin-when-jenkins-server-is-outside-of-a-kubernet)
+- [kubernetes-jenkins-integration](https://stackoverflow.com/questions/48827345/kubernetes-jenkins-integration)
