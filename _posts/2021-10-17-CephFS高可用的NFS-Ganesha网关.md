@@ -55,6 +55,7 @@ tag: [Ceph, NFS, Linux]
       - [6.2.1.2. watch到notify的处理](#6212-watch到notify的处理)
       - [6.2.1.3. ganesha 进程收到 kill -SIGHUP pid的处理](#6213-ganesha-进程收到-kill--sighup-pid的处理)
     - [6.2.2. 发送notify命令](#622-发送notify命令)
+  - [6.3. debug命令](#63-debug命令)
 - [7. 参考](#7-参考)
 
 <!-- /TOC -->
@@ -931,6 +932,16 @@ CEPH_RADOS_API int rados_notify2(rados_ioctx_t io, const char *o,
 				 uint64_t timeout_ms,
 				 char **reply_buffer, size_t *reply_buffer_len);
 ```
+
+## 6.3. debug命令
+
+遇到比较多服务无法启动但无异常日志输出的场景，可以用下面命令将日志打印到标准输出
+
+```bash
+ganesha.nfsd -F -L STDOUT
+```
+
+参照[issues/452](https://github.com/nfs-ganesha/nfs-ganesha/issues/452)
 
 # 7. 参考
 
