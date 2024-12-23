@@ -12,24 +12,24 @@ tag: [Kubernetes, GPU, AI]
 <!-- TOC depthFrom:2 orderedList:true -->
 
 - [HAMI Project Local Debugging](#hami-project-local-debugging)
-	- [1. Prerequisites](#1-prerequisites)
-	- [2. Create Local Directory for Configuration](#2-create-local-directory-for-configuration)
-		- [2.1. Create Folder](#21-create-folder)
-	- [3. Local Debugging of hami-device](#3-local-debugging-of-hami-device)
-		- [3.1. Collect Configuration](#31-collect-configuration)
-		- [3.2. Collect Environment Variables](#32-collect-environment-variables)
-		- [3.3. Modify Configuration](#33-modify-configuration)
-		- [3.4. Adjust Log Level](#34-adjust-log-level)
-		- [3.5. Stop the Original Service](#35-stop-the-original-service)
-		- [3.6. Start the New Service](#36-start-the-new-service)
-	- [4. Local Debugging of hami-scheduler](#4-local-debugging-of-hami-scheduler)
-		- [4.1. Collect Environment Variables for hami-scheduler](#41-collect-environment-variables-for-hami-scheduler)
-			- [4.1.1. TLS Configuration](#411-tls-configuration)
-		- [4.2. Modify Webhook](#42-modify-webhook)
-		- [4.3. Start an HTTP Service for the Extended hami-scheduler](#43-start-an-http-service-for-the-extended-hami-scheduler)
-		- [4.4. Stop the Original hami-scheduler](#44-stop-the-original-hami-scheduler)
-		- [4.5. Start the Local Scheduler](#45-start-the-local-scheduler)
-	- [5. Testing](#5-testing)
+  - [1. Prerequisites](#1-prerequisites)
+  - [2. Create Local Directory for Configuration](#2-create-local-directory-for-configuration)
+    - [2.1. Create Folder](#21-create-folder)
+  - [3. Local Debugging of hami-device](#3-local-debugging-of-hami-device)
+    - [3.1. Collect Configuration](#31-collect-configuration)
+    - [3.2. Collect Environment Variables](#32-collect-environment-variables)
+    - [3.3. Modify Configuration](#33-modify-configuration)
+    - [3.4. Adjust Log Level](#34-adjust-log-level)
+    - [3.5. Stop the Original Service](#35-stop-the-original-service)
+    - [3.6. Start the New Service](#36-start-the-new-service)
+  - [4. Local Debugging of hami-scheduler](#4-local-debugging-of-hami-scheduler)
+    - [4.1. Collect Environment Variables for hami-scheduler](#41-collect-environment-variables-for-hami-scheduler)
+      - [4.1.1. TLS Configuration](#411-tls-configuration)
+    - [4.2. Modify Webhook](#42-modify-webhook)
+    - [4.3. Start an HTTP Service for the Extended hami-scheduler](#43-start-an-http-service-for-the-extended-hami-scheduler)
+    - [4.4. Stop the Original hami-scheduler](#44-stop-the-original-hami-scheduler)
+    - [4.5. Start the Local Scheduler](#45-start-the-local-scheduler)
+  - [5. Testing](#5-testing)
 
 <!-- /TOC -->
 
@@ -98,6 +98,8 @@ k exec hami-device-plugin-fn8lc -c device-plugin -- cat /config/config.json > /c
 
 ### 3.2. Collect Environment Variables
 
+> tip: before exporting pod environment variables, configure `enableServiceLinks` for the pod, such as setting `spec.template.spec.enableServiceLinks: false` in the deployment configuration. This allows you to remove the information automatically added by k8s and only keep the environment variables configured by the pod itself.
+
 ```bash
 k exec hami-device-plugin-lzm4n env > start-plugin.sh
 ```
@@ -109,45 +111,18 @@ Remove configurations containing IP addresses; retain port configurations; add d
 
 ```bash
 #!/usr/bin/bash
-export PATH=$PATH:/k8s-vgpu/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export HOSTNAME=node1
-export NODE_NAME=node1
-export NVIDIA_MIG_MONITOR_DEVICES=all
-export HOOK_PATH=/usr/local
-export COREDNS_PORT_9153_TCP_PORT=9153
-export MY_HAMI_WEBUI_DCGM_EXPORTER_PORT_9400_TCP_PORT=9400
-export HAMI_SCHEDULER_PORT_443_TCP_PROTO=tcp
-export COREDNS_SERVICE_PORT=53
-export KUBERNETES_SERVICE_PORT_HTTPS=443
-export HAMI_SCHEDULER_PORT_31993_TCP_PROTO=tcp
-export HAMI_SCHEDULER_PORT_31993_TCP_PORT=31993
-export OLLAMA_NODEPORT_SERVICE_PORT_11434_TCP_PROTO=tcp
-export MY_HAMI_WEBUI_DCGM_EXPORTER_SERVICE_PORT=9400
-export HAMI_SCHEDULER_PORT_443_TCP_PORT=443
-export COREDNS_SERVICE_PORT_METRICS=9153
-export COREDNS_PORT_53_TCP_PROTO=tcp
-export COREDNS_PORT_9153_TCP_PROTO=tcp
-export MY_HAMI_WEBUI_SERVICE_PORT_HTTP=3000
-export MY_HAMI_WEBUI_PORT_3000_TCP_PROTO=tcp
-export HAMI_DEVICE_PLUGIN_MONITOR_PORT_31992_TCP_PROTO=tcp
-export HAMI_SCHEDULER_SERVICE_PORT=443
-export COREDNS_SERVICE_PORT_DNS_TCP=53
-export MY_HAMI_WEBUI_SERVICE_PORT=3000
-export HAMI_DEVICE_PLUGIN_MONITOR_PORT_31992_TCP_PORT=31992
-export OLLAMA_NODEPORT_SERVICE_SERVICE_PORT=11434
-export HAMI_SCHEDULER_SERVICE_PORT_MONITOR=31993
-export COREDNS_SERVICE_PORT_DNS=53
-export HAMI_SCHEDULER_SERVICE_PORT_HTTP=443
-export MY_HAMI_WEBUI_SERVICE_PORT_METRICS=8000
-export KUBERNETES_PORT_443_TCP_PORT=443
+export PATH=$PATH/k8s-vgpu/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export HOSTNAME=hami-scheduler-858f6b9dcf-4nn58
 export KUBERNETES_SERVICE_PORT=443
-export HAMI_DEVICE_PLUGIN_MONITOR_SERVICE_PORT_MONITORPORT=31992
-export MY_HAMI_WEBUI_PORT_8000_TCP_PROTO=tcp
-export MY_HAMI_WEBUI_PORT_8000_TCP_PORT=8000
-export MY_HAMI_WEBUI_DCGM_EXPORTER_SERVICE_PORT_METRICS=9400
-export HAMI_DEVICE_PLUGIN_MONITOR_SERVICE_PORT=31992
-export COREDNS_PORT_53_TCP_PORT=53
+export KUBERNETES_SERVICE_PORT_HTTPS=443
+export KUBERNETES_PORT=tcp://10.233.0.1:443
+export KUBERNETES_PORT_443_TCP=tcp://10.233.0.1:443
+export KUBERNETES_PORT_443_TCP_PROTO=tcp
+export KUBERNETES_PORT_443_TCP_PORT=443
+export KUBERNETES_PORT_443_TCP_ADDR=10.233.0.1
+export KUBERNETES_SERVICE_HOST=10.233.0.1
 export NVARCH=x86_64
+export NVIDIA_REQUIRE_CUDA=cuda>=12.6 brand=unknown,driver>=470,driver<471 brand=grid,driver>=470,driver<471 brand=tesla,driver>=470,driver<471 brand=nvidia,driver>=470,driver<471 brand=quadro,driver>=470,driver<471 brand=quadrortx,driver>=470,driver<471 brand=nvidiartx,driver>=470,driver<471 brand=vapps,driver>=470,driver<471 brand=vpc,driver>=470,driver<471 brand=vcs,driver>=470,driver<471 brand=vws,driver>=470,driver<471 brand=cloudgaming,driver>=470,driver<471 brand=unknown,driver>=535,driver<536 brand=grid,driver>=535,driver<536 brand=tesla,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=vapps,driver>=535,driver<536 brand=vpc,driver>=535,driver<536 brand=vcs,driver>=535,driver<536 brand=vws,driver>=535,driver<536 brand=cloudgaming,driver>=535,driver<536 brand=unknown,driver>=550,driver<551 brand=grid,driver>=550,driver<551 brand=tesla,driver>=550,driver<551 brand=nvidia,driver>=550,driver<551 brand=quadro,driver>=550,driver<551 brand=quadrortx,driver>=550,driver<551 brand=nvidiartx,driver>=550,driver<551 brand=vapps,driver>=550,driver<551 brand=vpc,driver>=550,driver<551 brand=vcs,driver>=550,driver<551 brand=vws,driver>=550,driver<551 brand=cloudgaming,driver>=550,driver<551
 export NV_CUDA_CUDART_VERSION=12.6.77-1
 export CUDA_VERSION=12.6.3
 export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
@@ -256,40 +231,16 @@ This results in a startup script file `start-scheduler.sh`.
 ```bash
 PATH=$PATH:/k8s-vgpu/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 HOSTNAME=hami-scheduler-67fc7ccd55-vjntl
-
-HAMI_SCHEDULER_PORT_31993_TCP_PORT=31993
-MY_HAMI_WEBUI_DCGM_EXPORTER_SERVICE_PORT_METRICS=9400
-MY_HAMI_WEBUI_PORT_3000_TCP_PROTO=tcp
-COREDNS_SERVICE_PORT=53
-COREDNS_SERVICE_PORT_DNS=53
-MY_HAMI_WEBUI_PORT_8000_TCP_PORT=8000
-COREDNS_PORT_53_UDP_PROTO=udp
-HAMI_DEVICE_PLUGIN_MONITOR_SERVICE_PORT=31992
-COREDNS_PORT_53_TCP_PROTO=tcp
-HAMI_SCHEDULER_PORT_31993_TCP_PROTO=tcp
-MY_HAMI_WEBUI_DCGM_EXPORTER_PORT_9400_TCP_PROTO=tcp
-KUBERNETES_PORT_443_TCP_PROTO=tcp
-MY_HAMI_WEBUI_PORT_8000_TCP_PROTO=tcp
-HAMI_DEVICE_PLUGIN_MONITOR_PORT_31992_TCP_PORT=31992
-COREDNS_PORT_53_TCP_PORT=53
-HAMI_SCHEDULER_SERVICE_PORT=443
-HAMI_SCHEDULER_SERVICE_PORT_HTTP=443
-MY_HAMI_WEBUI_SERVICE_PORT=3000
-HAMI_DEVICE_PLUGIN_MONITOR_SERVICE_PORT_MONITORPORT=31992
-MY_HAMI_WEBUI_DCGM_EXPORTER_SERVICE_PORT=9400
-MY_HAMI_WEBUI_PORT_3000_TCP_PORT=3000
-COREDNS_PORT_9153_TCP_PROTO=tcp
-HAMI_SCHEDULER_PORT_443_TCP_PROTO=tcp
-COREDNS_SERVICE_PORT_DNS_TCP=53
-HAMI_SCHEDULER_SERVICE_PORT_MONITOR=31993
-KUBERNETES_PORT_443_TCP_PORT=443
-COREDNS_SERVICE_PORT_METRICS=9153
+NVIDIA_MIG_MONITOR_DEVICES=all
+HOOK_PATH=/usr/local
+KUBERNETES_SERVICE_HOST=10.233.0.1
 KUBERNETES_SERVICE_PORT=443
-HAMI_DEVICE_PLUGIN_MONITOR_PORT_31992_TCP_PROTO=tcp
-OLLAMA_NODEPORT_SERVICE_PORT_11434_TCP_PORT=11434
-OLLAMA_NODEPORT_SERVICE_PORT_11434_TCP_PROTO=tcp
-MY_HAMI_WEBUI_SERVICE_PORT_HTTP=3000
 KUBERNETES_SERVICE_PORT_HTTPS=443
+KUBERNETES_PORT=tcp://10.233.0.1:443
+KUBERNETES_PORT_443_TCP=tcp://10.233.0.1:443
+KUBERNETES_PORT_443_TCP_PROTO=tcp
+KUBERNETES_PORT_443_TCP_PORT=443
+KUBERNETES_PORT_443_TCP_ADDR=10.233.0.1
 NVARCH=x86_64
 NVIDIA_REQUIRE_CUDA=cuda>=12.6 brand=unknown,driver>=470,driver<471 brand=grid,driver>=470,driver<471 brand=tesla,driver>=470,driver<471 brand=nvidia,driver>=470,driver<471 brand=quadro,driver>=470,driver<471 brand=quadrortx,driver>=470,driver<471 brand=nvidiartx,driver>=470,driver<471 brand=vapps,driver>=470,driver<471 brand=vpc,driver>=470,driver<471 brand=vcs,driver>=470,driver<471 brand=vws,driver>=470,driver<471 brand=cloudgaming,driver>=470,driver<471 brand=unknown,driver>=535,driver<536 brand=grid,driver>=535,driver<536 brand=tesla,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=vapps,driver>=535,driver<536 brand=vpc,driver>=535,driver<536 brand=vcs,driver>=535,driver<536 brand=vws,driver>=535,driver<536 brand=cloudgaming,driver>=535,driver<536 brand=unknown,driver>=550,driver<551 brand=grid,driver>=550,driver<551 brand=tesla,driver>=550,driver<551 brand=nvidia,driver>=550,driver<551 brand=quadro,driver>=550,driver<551 brand=quadrortx,driver>=550,driver<551 brand=nvidiartx,driver>=550,driver<551 brand=vapps,driver>=550,driver<551 brand=vpc,driver>=550,driver<551 brand=vcs,driver>=550,driver<551 brand=vws,driver>=550,driver<551 brand=cloudgaming,driver>=550,driver<551
 NV_CUDA_CUDART_VERSION=12.6.77-1
