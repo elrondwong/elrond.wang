@@ -12,7 +12,7 @@ Thanks Jekyll and Github Page!
 
 |序号|文章标题|文章类别|发布日期|
 |----|----|----|----|
-|1|[HAMI项目POD创建流程源码走读](http://elrond.wang/2024/12/24/HAMI项目POD创建流程源码走读)||2024-12-24|
+|1|[HAMI项目GPU POD调度流程源码走读](http://elrond.wang/2024/12/24/HAMI项目GPU-POD调度流程源码走读)||2024-12-24|
 |2|[HAMI本地调试](http://elrond.wang/2024/12/20/HAMI本地调试)||2024-12-20|
 |3|[HAMI-local-debugging](http://elrond.wang/2024/12/20/HAMI-local-debugging)||2024-12-20|
 |4|[容器启动加速Nydus调研与实践](http://elrond.wang/2023/06/09/容器启动加速Nydus调研与实践)||2023-06-09|
