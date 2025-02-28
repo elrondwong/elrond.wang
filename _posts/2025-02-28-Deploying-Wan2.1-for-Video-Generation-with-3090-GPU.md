@@ -1,51 +1,51 @@
 ---
 layout: post
-title: 使用3090显卡部署Wan2.1生成视频
+title: Deploying Wan2.1 for Video Generation with 3090 GPU
 catalog: true
 tag: [Kubernetes, GPU, AI]
 ---
 
 <!-- TOC depthFrom:2 orderedList:true -->
 
-- [使用3090显卡部署Wan2.1生成视频](#使用3090显卡部署wan21生成视频)
-	- [1. 环境说明](#1-环境说明)
-	- [2. 模型下载](#2-模型下载)
-	- [3. 克隆仓库](#3-克隆仓库)
-	- [4. 安装依赖](#4-安装依赖)
-	- [5. 生成视频](#5-生成视频)
-		- [5.1. 使用generate脚本生成](#51-使用generate脚本生成)
-		- [5.2. 使用gradio启动UI界面生成](#52-使用gradio启动ui界面生成)
-			- [5.2.1. 启动gradio服务](#521-启动gradio服务)
-			- [5.2.2. 访问UI，输入prompt，点击生成视频](#522-访问ui输入prompt点击生成视频)
+- [Deploying Wan2.1 for Video Generation with 3090 GPU](#deploying-wan21-for-video-generation-with-3090-gpu)
+	- [1. Environment Requirements](#1-environment-requirements)
+	- [2. Model Download](#2-model-download)
+	- [3. Clone Repository](#3-clone-repository)
+	- [4. Install Dependencies](#4-install-dependencies)
+	- [5. Generate Videos](#5-generate-videos)
+		- [5.1. Using the Generate Script](#51-using-the-generate-script)
+		- [5.2. Using Gradio UI Interface](#52-using-gradio-ui-interface)
+			- [5.2.1. Launch Gradio Service](#521-launch-gradio-service)
+			- [5.2.2. Access UI, Input Prompt, and Generate Video](#522-access-ui-input-prompt-and-generate-video)
 
 <!-- /TOC -->
 
-# 使用3090显卡部署Wan2.1生成视频
+# Deploying Wan2.1 for Video Generation with 3090 GPU
 
-## 1. 环境说明
+## 1. Environment Requirements
 
-|名称|规格|备注|
+|Name|Specification|Notes|
 |---|---|---|
-|内存VRAM|22GB|22G不够用，需要更大的内存，如果没有的话可以用swap内存代替|
-|显卡|3090|NVIDIA|
-|显存|24GB||
-|CUDA|12.5|CUDA >= 11.7 否则会失败|
+|Memory VRAM|22GB|22GB is not enough, needs more memory. If not available, swap memory can be used as an alternative|
+|GPU|3090|NVIDIA|
+|VRAM|24GB||
+|CUDA|12.5|CUDA >= 11.7 required, otherwise it will fail|
 
-## 2. 模型下载
+## 2. Model Download
 
-使用 [hfs.sh脚本下载模型](https://gist.github.com/padeoe/697678ab8e528b85a2a7bddafea1fa4f)
+Use [hfs.sh script to download the model](https://gist.github.com/padeoe/697678ab8e528b85a2a7bddafea1fa4f)
 
 ```bash
 ./hfd.sh Wan-AI/Wan2.1-T2V-1.3B --tool aria2c -x 10 --hf_token xxxxxxx --hf_username xxxxxxx
 ```
 
-## 3. 克隆仓库
+## 3. Clone Repository
 
 ```bash
 git clone git@github.com:Wan-Video/Wan2.1.git
 ```
 
-## 4. 安装依赖
+## 4. Install Dependencies
 
 > Note: CUDA >= 11.7 torch >= 2.4.0
 
@@ -54,14 +54,14 @@ cd Wan2.1
 pip install -r requirements.txt
 ```
 
-## 5. 生成视频
+## 5. Generate Videos
 
-### 5.1. 使用generate脚本生成
+### 5.1. Using the Generate Script
 
-> Note: 一定要配置 --offload_model True --t5_cpu 否则GPU内存不够会在保存视频时OOM
+> Note: It's essential to configure --offload_model True --t5_cpu otherwise GPU memory will OOM when saving the video
 
 ```bash
- python generate.py  --task t2v-1.3B --size 832*480 --ckpt_dir ./Wan2.1-T2V-1.3B --offload_model True --t5_cpu --sample_shift 8 --sample_guide_scale 6 --prompt "Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage."
+python generate.py  --task t2v-1.3B --size 832*480 --ckpt_dir ./Wan2.1-T2V-1.3B --offload_model True --t5_cpu --sample_shift 8 --sample_guide_scale 6 --prompt "Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage."
 [2025-02-28 08:33:08,062] INFO: Generation job args: Namespace(task='t2v-1.3B', size='832*480', frame_num=81, ckpt_dir='./Wan2.1-T2V-1.3B', offload_model=True, ulysses_size=1, ring_size=1, t5_fsdp=False, t5_cpu=True, dit_fsdp=False, save_file=None, prompt='Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.', use_prompt_extend=False, prompt_extend_method='local_qwen', prompt_extend_model=None, prompt_extend_target_lang='ch', base_seed=6930324173022001627, image=None, sample_solver='unipc', sample_steps=50, sample_shift=8.0, sample_guide_scale=6.0)
 [2025-02-28 08:33:08,063] INFO: Generation model config: {'__name__': 'Config: Wan T2V 1.3B', 't5_model': 'umt5_xxl', 't5_dtype': torch.bfloat16, 'text_len': 512, 'param_dtype': torch.bfloat16, 'num_train_timesteps': 1000, 'sample_fps': 16, 'sample_neg_prompt': '色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走', 't5_checkpoint': 'models_t5_umt5-xxl-enc-bf16.pth', 't5_tokenizer': 'google/umt5-xxl', 'vae_checkpoint': 'Wan2.1_VAE.pth', 'vae_stride': (4, 8, 8), 'patch_size': (1, 2, 2), 'dim': 1536, 'ffn_dim': 8960, 'freq_dim': 256, 'num_heads': 12, 'num_layers': 30, 'window_size': (-1, -1), 'qk_norm': True, 'cross_attn_norm': True, 'eps': 1e-06}
 [2025-02-28 08:33:08,063] INFO: Input prompt: Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.
@@ -75,7 +75,7 @@ pip install -r requirements.txt
 [2025-02-28 08:47:32,176] INFO: Finished.
 ```
 
-视频生成完成, 可以在当前目录下查看生成的视频
+The video generation is complete. You can find the generated video in the current directory:
 
 ```bash
 t2v-1.3B_832*480_1_1_Two_anthropomorphic_cats_in_comfy_boxing_gear_and__20250228_084729.mp4
@@ -83,14 +83,14 @@ t2v-1.3B_832*480_1_1_Two_anthropomorphic_cats_in_comfy_boxing_gear_and__20250228
 
 <video width="832" height="480" controls>
   <source src="/img/posts/使用3090显卡部署Wan2.1生成视频/两只猫猫打架.mp4" type="video/mp4">
-  您的浏览器不支持 video 标签。
+  Your browser does not support the video tag.
 </video>
 
-### 5.2. 使用gradio启动UI界面生成
+### 5.2. Using Gradio UI Interface
 
-#### 5.2.1. 启动gradio服务
+#### 5.2.1. Launch Gradio Service
 
-> 这里需要一个prompt扩展的API，可以使用dashscope的API，也可以使用自己的API，这里使用dashscope的API https://dashscope.console.aliyun.com/overview
+> This requires a prompt extension API. You can use either the dashscope API or your own API. Here we'll use the dashscope API https://dashscope.console.aliyun.com/overview
 
 ```bash
 DASH_API_KEY=xxxx  python gradio/t2v_1.3B_singleGPU.py --prompt_extend_method 'dashscope' --ckpt_dir ./Wan2.1-T2V-1.3B/
@@ -102,22 +102,18 @@ To create a public link, set `share=True` in `launch()`.
 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 50/50 [08:14<00:00,  9.88s/it]
 ```
 
-#### 5.2.2. 访问UI，输入prompt，点击生成视频
+#### 5.2.2. Access UI, Input Prompt, and Generate Video
 
 ![gradio](/img/posts/使用3090显卡部署Wan2.1生成视频/gradio.jpg)
 
-```bash
-在白雪皑皑的梅里雪山上空，数架战斗机编队飞行，战斗机在空中变换各种队形和特技动作，背景是晴朗的蓝天和壮丽的山峰，画面充满动感和震撼力。
-```
-
+Example prompt:
 ```bash
 Over the snow-covered Meili Snow Mountains, multiple fighter jets fly in formation, performing various aerial maneuvers and stunts against a backdrop of clear blue skies and majestic peaks. The scene is dynamic and awe-inspiring.
 ```
 
 ![t2v](/img/posts/使用3090显卡部署Wan2.1生成视频/result.jpg)
 
-
 <video width="480" height="832" controls>
   <source src="/img/posts/使用3090显卡部署Wan2.1生成视频/战斗机飞越梅里雪山.mp4" type="video/mp4">
-  您的浏览器不支持 video 标签。
+  Your browser does not support the video tag.
 </video>
