@@ -1,0 +1,88 @@
+digraph vLLM_Architecture {
+  rankdir=TB;
+  node [shape=record, fontname="Arial", fontsize=10];
+  edge [fontname="Arial", fontsize=9];
+  
+  // 顶层接口类
+  LLM [label="{LLM\n(entrypoints/llm.py)|+ __init__(model, ...)\l+ generate(prompts, sampling_params)\l+ get_engine_class()\l}" style="filled" fillcolor="#E6F2FF"];
+  
+  // 核心引擎类
+  LLMEngine [label="{LLMEngine\n(llm_engine.py)|+ __init__()\l+ from_engine_args(cls, args)\l+ add_request(request_id, prompt, ...)\l+ step()\l+ get_model_config()\l}" style="filled" fillcolor="#FFEBCD"];
+  
+  // 参数类
+  EngineArgs [label="{EngineArgs\n(config.py)|+ model: str\l+ tensor_parallel_size: int\l+ from_cli_args(cls, args)\l+ __post_init__()\l}" style="filled" fillcolor="#E0FFFF"];
+  
+  SamplingParams [label="{SamplingParams\n(sampling_params.py)|+ temperature: float\l+ top_p: float\l+ max_tokens: int\l+ best_of: int\l}" style="filled" fillcolor="#E0FFFF"];
+  
+  // 工作器类
+  WorkerBase [label="{WorkerBase\n(worker/worker_base.py)|+ __init__(vllm_config)\l+ init_device()\l+ load_model()\l+ execute_model()\l}" style="filled" fillcolor="#FFE4E1"];
+  
+  DelegateWorkerBase [label="{DelegateWorkerBase\n(worker/worker_base.py)|+ __init__(*args, **kwargs)\l+ init_device()\l+ load_model()\l+ __getattr__(attr)\l}" style="filled" fillcolor="#FFE4E1"];
+  
+  WorkerWrapperBase [label="{WorkerWrapperBase\n(worker/worker_base.py)|+ __init__(vllm_config, rpc_rank)\l+ init_worker(all_kwargs)\l+ execute_method(method, *args)\l+ __getattr__(attr)\l}" style="filled" fillcolor="#FFE4E1"];
+  
+  // 具体Worker实现
+  GPUWorker [label="{GPUWorker\n(worker/gpu_worker.py)|+ __init__(vllm_config, ...)\l+ init_device()\l+ load_model()\l+ execute_model()\l}" style="filled" fillcolor="#FFF8DC"];
+  
+  CPUWorker [label="{CPUWorker\n(worker/cpu_worker.py)|+ __init__(vllm_config, ...)\l+ init_device()\l+ load_model()\l+ execute_model()\l}" style="filled" fillcolor="#FFF8DC"];
+  
+  OpenVINOWorker [label="{OpenVINOWorker\n(worker/openvino_worker.py)|+ __init__(vllm_config, ...)\l+ init_device()\l+ load_model()\l+ execute_model()\l}" style="filled" fillcolor="#FFF8DC"];
+  
+  // 执行器类
+  ExecutorBase [label="{ExecutorBase\n(executor/executor_base.py)|+ __init__(vllm_config)\l+ _init_executor()\l}" style="filled" fillcolor="#F0E68C"];
+  
+  UniProcExecutor [label="{UniProcExecutor\n(executor/uniproc_executor.py)|+ _init_executor()\l+ collective_rpc(method, args)\l}" style="filled" fillcolor="#F0E68C"];
+  
+  // 模型运行器类
+  ModelRunnerBase [label="{ModelRunnerBase\n(worker/model_runner_base.py)|+ __init__(vllm_config)\l+ load_model()\l+ execute_model()\l+ capture_model(kv_caches)\l}" style="filled" fillcolor="#98FB98"];
+  
+  GPUModelRunner [label="{GPUModelRunner\n(worker/model_runner.py)|+ __init__(vllm_config, ...)\l+ load_model()\l+ execute_model()\l+ capture_model(kv_caches)\l}" style="filled" fillcolor="#98FB98"];
+  
+  // CUDA图相关类
+  CUDAGraphRunner [label="{CUDAGraphRunner\n(worker/model_runner.py)|+ __init__(model, ...)\l+ capture(input_ids, ...)\l+ forward(...)\l}" style="filled" fillcolor="#FFDAB9"];
+  
+  // 平台与插件
+  Platform [label="{Platform\n(platforms/platform.py)|+ is_cuda()\l+ is_cpu()\l+ get_device_type()\l+ get_default_workers()\l}" style="filled" fillcolor="#D8BFD8"];
+  
+  Plugins [label="{Plugins\n(plugins/)\l}" style="filled" fillcolor="#D8BFD8"];
+  
+  // 工具类
+  Utils [label="{Utils\n(utils.py)|+ resolve_obj_by_qualname()\l+ run_method()\l}" style="filled" fillcolor="#DCDCDC"];
+
+  // 关系定义
+  LLM -> LLMEngine [label="使用"];
+  LLM -> EngineArgs [label="配置"];
+  LLM -> SamplingParams [label="调用"];
+  
+  LLMEngine -> ExecutorBase [label="创建"];
+  ExecutorBase -> UniProcExecutor [label="继承"];
+  
+  UniProcExecutor -> WorkerWrapperBase [label="创建"];
+  WorkerWrapperBase -> WorkerBase [label="持有"];
+  WorkerBase -> DelegateWorkerBase [label="基类"];
+  
+  DelegateWorkerBase -> Utils [label="使用"];
+  WorkerWrapperBase -> Utils [label="调用"];
+  
+  WorkerBase -> GPUWorker [label="继承"];
+  WorkerBase -> CPUWorker [label="继承"];
+  WorkerBase -> OpenVINOWorker [label="继承"];
+  
+  GPUWorker -> ModelRunnerBase [label="持有"];
+  CPUWorker -> ModelRunnerBase [label="持有"];
+  OpenVINOWorker -> ModelRunnerBase [label="持有"];
+  
+  ModelRunnerBase -> GPUModelRunner [label="继承"];
+  GPUModelRunner -> CUDAGraphRunner [label="创建"];
+  
+  EngineArgs -> Platform [label="加载"];
+  EngineArgs -> Plugins [label="初始化"];
+  
+  // 添加说明
+  label = "\nvLLM 架构类关系图
+           \n主要展示核心组件之间的关系和调用流程
+           \n蓝色：API接口类  黄色：引擎与执行器  粉色：工作器类  绿色：模型运行器类";
+  labelloc = "t";
+  fontname = "Arial bold";
+  fontsize = 12;
+} 
