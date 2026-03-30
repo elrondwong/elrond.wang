@@ -26,7 +26,7 @@ tag: [Kubernetes, GPU, AI]
 
 # HAMI-core 调试
 
-[HAMI-core](https://github.com/hami-tech/hami-core) 是一个用于拦截CUDA-Driver的动态链接库, 动态库调试相对比较麻烦，这里记录下调试方式
+[HAMI-core](https://github.com/hami-tech/hami-core) 是一个用于拦截CUDA-Runtime(libcudart.so) 发给CUDA-Driver(libcuda.so)请求的动态链接库, 动态库调试相对比较麻烦，这里记录下调试方式
 
 ## 1. 动态链接库编译
 
